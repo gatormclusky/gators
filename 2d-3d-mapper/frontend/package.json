@@ -1,0 +1,20 @@
+{
+  "name": "2d-3d-mapper",
+  "version": "1.0.0",
+  "description": "2D to 3D Map Converter",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "axios": "^1.6.2",
+    "three": "^r155.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test"
+  },
+  "devDependencies": {
+    "react-scripts": "5.0.1"
+  }
+}
