@@ -1,0 +1,60 @@
+# Document Restoration Configuration
+
+restoration:
+  # Denoising parameters
+  denoise:
+    strength: 10
+    bilateral_d: 9
+    bilateral_sigma_color: 75
+    bilateral_sigma_space: 75
+  
+  # Contrast enhancement
+  contrast:
+    method: clahe  # Options: clahe, histogram, levels
+    limit: 2.0
+    tile_size: 8
+  
+  # Sharpening
+  sharpening:
+    method: unsharp  # Options: unsharp, laplacian
+    strength: 1.5
+  
+  # Binarization
+  binarization:
+    method: adaptive  # Options: adaptive, otsu, niblack
+    block_size: 11
+    constant: 2
+
+# PDF settings
+pdf:
+  dpi: 300  # Resolution for PDF to image conversion
+  quality: 95  # JPEG quality for PDF pages
+  preserve_original: true  # Keep original PDF file
+  multi_page_handling: 'sequential'  # Process pages sequentially
+
+# OCR settings
+ocr:
+  engine: tesseract
+  languages:
+    - eng
+  confidence_threshold: 0.6
+  page_segmentation_mode: 3  # Full page automatically
+
+# Output settings
+output:
+  format: png  # Default output format: png, jpg, tiff
+  compression: true
+  quality: 95
+  dpi: 300
+
+# Batch processing
+batch:
+  num_workers: 4
+  chunk_size: 10
+  timeout: 300  # seconds per document
+
+# Logging
+logging:
+  level: INFO
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  file: 'restoration.log'
