@@ -6,22 +6,55 @@
 <title>Takur Ghar 3D</title>
 <style>
   html, body { margin: 0; height: 100%; background: #14110d; color: #eee; font: 14px system-ui, sans-serif; }
-  #ui { position: fixed; top: 12px; left: 12px; padding: 10px 12px; background: rgba(20,17,13,.82); border-radius: 8px; max-width: 320px; }
+  #ui { position: fixed; top: 12px; left: 12px; bottom: 12px; width: 340px; overflow-y: auto; padding: 12px; background: rgba(20,17,13,.88); border-radius: 8px; box-sizing: border-box; }
+  h1 { font-size: 15px; margin: 0 0 6px; }
+  h2 { font-size: 13px; margin: 14px 0 4px; text-transform: uppercase; letter-spacing: .04em; opacity: .75; }
   button { margin: 2px 4px 2px 0; padding: 6px 10px; border: 1px solid #777; border-radius: 6px; background: #2a241c; color: #eee; cursor: pointer; }
   button[aria-pressed="true"] { background: #c9822b; border-color: #c9822b; color: #111; }
-  label { display: block; margin-top: 6px; }
-  #note { margin-top: 6px; font-size: 12px; opacity: .8; line-height: 1.35; }
+  label.layer { display: flex; gap: 8px; align-items: flex-start; margin: 6px 0; cursor: pointer; }
+  .sw { width: 12px; height: 12px; border-radius: 50%; margin-top: 3px; flex: none; }
+  small, .note { font-size: 12px; opacity: .8; line-height: 1.4; }
+  #info { margin-top: 8px; padding: 8px; background: #241f18; border-radius: 6px; font-size: 12px; line-height: 1.45; min-height: 3em; }
+  ol { padding-left: 18px; margin: 4px 0; font-size: 12px; line-height: 1.4; }
+  li { margin-bottom: 4px; }
+  .tag { display: inline-block; font-size: 10px; padding: 1px 5px; border-radius: 4px; background: #444; margin-left: 4px; vertical-align: 1px; }
+  @media (max-width: 700px) { #ui { width: auto; right: 12px; bottom: auto; max-height: 45vh; } }
 </style>
 </head>
 <body>
 <div id="ui">
-  <strong>Takur Ghar terrain</strong>
+  <h1>Takur Ghar, 4 March 2002</h1>
   <div>
     <button id="sep" aria-pressed="true">Sep 2002 (bare ground)</button>
-    <button id="mar" aria-pressed="false">Mar 2002 (after battle, snow)</button>
+    <button id="mar" aria-pressed="false">Mar 2002 (snow)</button>
   </div>
-  <label>Vertical exaggeration <input id="exag" type="range" min="0.5" max="3" step="0.1" value="1"> <span id="exagv">1.5x</span></label>
-  <div id="note">Terrain: NASADEM (SRTM-derived, Feb 2000). Texture: Landsat, 30 m. Red marker: approx. summit (33.34 N, 69.21 E).
+  <div><button id="top">Top view</button><button id="obl">Oblique view</button></div>
+  <label class="note">Vertical exaggeration <input id="exag" type="range" min="0.5" max="3" step="0.1" value="1"> <span id="exagv">1.5x</span></label>
+
+  <h2>Overlay</h2>
+  <label class="layer"><input type="checkbox" id="L_summit" checked><span class="sw" style="background:#ff2020"></span>
+    <span>Summit complex <span class="tag">sourced, ~100 m</span></span></label>
+  <label class="layer"><input type="checkbox" id="L_chalk2" checked><span class="sw" style="background:#ff7040"></span>
+    <span>Chalk 2 landing elevation (~2,576 m) <span class="tag">elevation only</span></span></label>
+  <label class="layer"><input type="checkbox" id="L_ring" checked><span class="sw" style="background:#ffd23f"></span>
+    <span>Razor 03 crash: 6 km ring <span class="tag">direction unknown</span></span></label>
+  <div id="info">Click a layer's name to read how it was derived and its source.</div>
+
+  <h2>Sequence (Copeland et al. 2021)</h2>
+  <ol>
+    <li>Night of 3-4 Mar: an AC-130 infrared sweep declares the summit landing zone (LZ) "cold".</li>
+    <li>Razor 03 (MAKO 30, SEAL team) flares to land on the summit and is hit by an RPG. Neil Roberts falls out; the aircraft makes a controlled crash away from the peak.</li>
+    <li>Razor 04 recovers the crew to Gardez, then reinserts MAKO 30 at the same LZ under heavy fire. Roberts is not found and the team breaks contact.</li>
+    <li>Ranger quick reaction force from Bagram: Razor 01 (Chalk 1) lands at the same LZ and crash-lands under RPG fire.</li>
+    <li>Razor 02 (Chalk 2) lands over 600 m below the summit; the Rangers climb a northeast-facing slope for 2.5+ hours to reach Chalk 1.</li>
+    <li>Strafing runs and a Predator Hellfire on the main bunker; the Rangers take the summit and wait for dark to exfiltrate.</li>
+  </ol>
+  <div class="note">17-hour fight; 7 US killed, 2 MH-47E lost.</div>
+
+  <h2>Read this</h2>
+  <div class="note">Terrain: NASADEM (SRTM-derived, Feb 2000), ~31 m. Texture: Landsat, 30 m, Sep and Mar 2002.
+  Nothing here is surveyed. The overlay shows what the published accounts support, at the precision they support it.
+  Not placed: the Razor 03 crash site (no direction given), the "mosque" landmark, and the Predator's orbit.
   Drag to orbit, scroll to zoom, right-drag to pan.</div>
 </div>
 <script type="importmap">
@@ -34,8 +67,17 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-const BASE_EXAG = 1.5;
-const SUMMIT = { x: (69.21 - 69.15) * 111320 * Math.cos(33.35 * Math.PI / 180), z: (33.40 - 33.34) * 110574 };
+const INFO = {
+  summit: '<b>Summit complex</b> (DEM high point 3,172 m; published 3,186 m, about 450 m from the usually quoted coordinate). ' +
+    'Per Copeland et al. (2021): enemy bunkers, a DShK heavy machine gun and mortar positions on the peak; a bowl-shaped, snow-covered LZ about 60 m from the bunkers; ' +
+    'the Ranger fighting position beside the LZ; the northeast flank was a vertical cliff. Razor 03 was hit landing here, Razor 04 reinserted here, Razor 01 crash-landed here. ' +
+    'All of it sits within ~100 m, which this 31 m terrain can\'t separate, so it is one marker.',
+  chalk2: '<b>Chalk 2 landing elevation.</b> Razor 02 put Chalk 2 "over 600 m below the summit" (about 2,000 ft below the LZ), and they then climbed a northeast-facing slope for over 2.5 hours (Copeland et al. 2021, citing Macpherson 2005). ' +
+    'The orange band is the terrain at about 2,576 m within 6 km of the summit. The landing was somewhere along it; the sources do not say where. ' +
+    'In this terrain model all ground at that elevation lies on the western, valley side, while the paper\'s Figure 3 draws the Chalk 2 approach from the east. I could not reconcile the two (the published summit height and coordinate, or "over 600 m", may be loose), and a search for steep northeast-facing slopes leading up to the summit found almost nothing, so no landing spot is claimed.',
+  ring: '<b>Razor 03 crash: 6 km ring.</b> The geographic analysis says Razor 03 made a controlled crash "away from the peak"; the Army SOF history ("From a Great Height") puts tail 476 about 6 km from Takur Ghar. ' +
+    'Neither gives a direction, so this is only a ring. Treating tail 476 as Razor 03 is my inference, and the sources are not fully consistent with each other.',
+};
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -50,21 +92,38 @@ sun.position.set(-8000, 9000, -6000);
 scene.add(sun);
 
 const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 50, 200000);
-camera.position.set(6000, 9000, 22000);
+camera.position.set(6000, 8500, 21000);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(6000, 3000, 5500);
 controls.update();
+const PANEL = innerWidth > 700 ? 360 : 0;  // keep the model clear of the side panel
+const setOffset = () => { camera.setViewOffset(innerWidth, innerHeight, -PANEL / 2, 0, innerWidth, innerHeight); };
+setOffset();
 
 const world = new THREE.Group();
 scene.add(world);
 let mesh;
+const layers = {};
+
+function label(text, color) {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 96;
+  const g = c.getContext('2d');
+  g.font = 'bold 40px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.lineWidth = 8; g.strokeStyle = 'rgba(0,0,0,.85)'; g.strokeText(text, 256, 48);
+  g.fillStyle = color; g.fillText(text, 256, 48);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, transparent: true }));
+  sp.scale.set(2600, 487, 1);
+  sp.renderOrder = 10;
+  return sp;
+}
 
 const textures = {};
-const loader = new THREE.TextureLoader();
-function tex(name, file) {
-  textures[name] = loader.load(file, (t) => { t.flipY = false; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; if (name === current) apply(name); });
-}
 let current = 'sep';
+const tl = new THREE.TextureLoader();
+function tex(name, file, flip = false) {
+  textures[name] = tl.load(file, (t) => { t.flipY = flip; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; if (name === current) apply(name); });
+  return textures[name];
+}
 function apply(name) {
   current = name;
   if (mesh && textures[name]?.image) { mesh.material.map = textures[name]; mesh.material.needsUpdate = true; }
@@ -73,35 +132,74 @@ function apply(name) {
 tex('sep', 'takur_ghar_2002_texture.png');
 tex('mar', 'takur_ghar_2002_mar_texture.png');
 
-new GLTFLoader().load('takur_ghar_2002.glb', (gltf) => {
+Promise.all([
+  new Promise((res) => new GLTFLoader().load('takur_ghar_2002.glb', res)),
+  fetch('overlay.json').then((r) => r.json()),
+]).then(([gltf, ov]) => {
   gltf.scene.traverse((o) => { if (o.isMesh) mesh = o; });
   if (!mesh.geometry.attributes.normal) mesh.geometry.computeVertexNormals();
   mesh.material = new THREE.MeshStandardMaterial({ map: mesh.material.map, roughness: 1, metalness: 0 });
   world.add(gltf.scene);
   apply(current);
-  // marker at the vertex nearest the summit coordinate
-  const pos = mesh.geometry.attributes.position;
-  let best = Infinity, bi = 0;
-  for (let i = 0; i < pos.count; i++) {
-    const d = (pos.getX(i) - SUMMIT.x) ** 2 + (pos.getZ(i) - SUMMIT.z) ** 2;
-    if (d < best) { best = d; bi = i; }
-  }
-  const marker = new THREE.Mesh(new THREE.ConeGeometry(120, 500, 12), new THREE.MeshBasicMaterial({ color: 0xff2020 }));
-  marker.rotation.x = Math.PI;
-  marker.position.set(pos.getX(bi), pos.getY(bi) + 300, pos.getZ(bi));
-  marker.name = 'marker';
-  world.add(marker);
+
+  // Summit complex
+  const [sx, sy, sz] = ov.summit.model;
+  const summit = new THREE.Group();
+  const cone = new THREE.Mesh(new THREE.ConeGeometry(130, 520, 12), new THREE.MeshBasicMaterial({ color: 0xff2020 }));
+  cone.rotation.x = Math.PI; cone.position.set(0, 300, 0);
+  const ringM = new THREE.Mesh(new THREE.TorusGeometry(260, 25, 8, 40), new THREE.MeshBasicMaterial({ color: 0xff2020 }));
+  ringM.rotation.x = Math.PI / 2; ringM.position.set(0, 20, 0);
+  const lab = label('Summit complex', '#ff6a6a'); lab.position.set(0, 1100, 0);
+  summit.add(cone, ringM, lab); summit.position.set(sx, sy, sz);
+  world.add(summit); layers.summit = summit;
+
+  // Chalk 2 candidate area: transparent copy of the terrain carrying the highlight texture
+  const ot = tl.load(ov.chalk2.texture, (t) => { t.flipY = false; t.colorSpace = THREE.SRGBColorSpace; });
+  const chalk = new THREE.Mesh(mesh.geometry, new THREE.MeshBasicMaterial({
+    map: ot, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+  chalk.renderOrder = 2;
+  const cg = new THREE.Group(); cg.add(chalk);
+  const clab = label('Chalk 2: ~2,576 m', '#ffb060');
+    clab.position.set(...ov.chalk2.label_model); clab.position.y += 700; cg.add(clab);
+  world.add(cg); layers.chalk2 = cg;
+
+  // Razor 03 ring (contiguous runs inside the box)
+  const ringG = new THREE.Group();
+  let run = [];
+  const flush = () => {
+    if (run.length > 1) {
+      const g = new THREE.BufferGeometry().setFromPoints(run.map((p) => new THREE.Vector3(...p)));
+      const l = new THREE.Line(g, new THREE.LineDashedMaterial({ color: 0xffd23f, dashSize: 220, gapSize: 140 }));
+      l.computeLineDistances(); ringG.add(l);
+    }
+    run = [];
+  };
+  for (const p of ov.ring6km) { if (p) run.push(p); else flush(); }
+  flush();
+  const rlab = label('Razor 03 crash ring (6 km)', '#ffd23f');
+  const mid = ov.ring6km.filter(Boolean)[Math.floor(ov.ring6km.filter(Boolean).length / 2)];
+  rlab.position.set(mid[0], mid[1] + 700, mid[2]); ringG.add(rlab);
+  world.add(ringG); layers.ring = ringG;
   window.__ready = true;
 });
 
+for (const key of ['summit', 'chalk2', 'ring']) {
+  const box = document.getElementById('L_' + (key === 'ring' ? 'ring' : key));
+  box.addEventListener('change', () => { if (layers[key]) layers[key].visible = box.checked; });
+  box.parentElement.querySelector('span:last-child').addEventListener('click', () => { document.getElementById('info').innerHTML = INFO[key]; });
+  box.parentElement.addEventListener('mouseenter', () => { document.getElementById('info').innerHTML = INFO[key]; });
+}
+
+document.getElementById('top').onclick = () => { camera.position.set(6000, 24000, 6200); controls.target.set(6000, 0, 5500); controls.update(); };
+document.getElementById('obl').onclick = () => { camera.position.set(6000, 8500, 21000); controls.target.set(6000, 3000, 5500); controls.update(); };
 document.getElementById('sep').onclick = () => apply('sep');
 document.getElementById('mar').onclick = () => apply('mar');
 const exag = document.getElementById('exag');
 exag.oninput = () => {
   world.scale.y = Number(exag.value);
-  document.getElementById('exagv').textContent = (BASE_EXAG * Number(exag.value)).toFixed(1) + 'x';
+  document.getElementById('exagv').textContent = (1.5 * Number(exag.value)).toFixed(1) + 'x';
 };
-addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; setOffset(); camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
 </script>
 </body>
