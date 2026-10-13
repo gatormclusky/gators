@@ -162,15 +162,18 @@ from above with rotors turning and small dark (hot) figures leaving its tail, li
 | 05:41 | Chapman "regains his faculties and continues to fight" | recovered ~05:20, fought ~45 min |
 | 05:43-05:44 | Razor 01 incoming, RPGs; Chapman killed | Razor 01 lands 06:05 |
 
-The sources do not share one clock. 04:27 vs 04:57 is a 30-minute gap (what you would get if the reel used UTC+4 and the
-Army UTC+4:30), but the later rows differ by 21 minutes in the opposite direction, so there is no constant offset. I have not
-resolved this; any timeline built from them needs the original clocks.
+**Correction.** I first wrote that there was no constant offset between the reel and the other sources. That was wrong once
+the user's own slide is used as a reference: its panel "QRF INFIL/SHOOTDOWN IN RZR 01 - 6:14am" is exactly 30 minutes after the
+reel's 05:44 for Razor 01, and the Army's MAKO-30 landing (04:57) is exactly 30 minutes after the reel's 04:27. So the reel's
+"Local Time" is UTC+4 and the slide and Army history are UTC+4:30. Two sources still disagree with each other: the Army's
+history puts Razor 01's landing at 06:05 against the slide's 06:14.
 
 ### The user's HUD frame, timed
 
-Its clock, 01:47:41, is almost certainly Zulu (as 01:47 local would precede the first landing). On the reel's apparent UTC+4
-clock that is 05:47:41, about 3.5 minutes after the reel's last frame, with a Chinook on the ground at the LZ unloading men.
-So the frame is probably Razor 01 at the LZ. That is an inference, not a proof.
+Its clock, 01:47:41, is almost certainly Zulu. That is 06:17:41 on the slide's UTC+4:30 clock (3.7 minutes after the slide's
+Razor 01 shootdown at 06:14) and 05:47:41 on the reel's UTC+4 clock (3.7 minutes after the reel's Razor 01 frames at 05:44). The
+frame shows a Chinook on the ground with rotors still turning and figures at its tail, like the reel's Razor 01 frames. So the
+frame is very probably Razor 01 at the LZ, a few minutes after it went down. Still an inference, not a proof.
 
 ### DoD's own words on the summit
 
@@ -188,7 +191,7 @@ steeply north (about 175 m in 370 m). East-west slopes either side of the summit
 resolution). West of the high point, at the Predator fix, there is a flat bench at 3,100-3,111 m about 180 m long north-south,
 which fits "only one place to off-load a helicopter" and a bowl-shaped LZ.
 
-### Candidate outcrop (LOW confidence)
+### Candidate outcrop (LOW confidence; see "Competing placements" below, where it is weakened)
 
 If the ridge photo was taken from the east looking west (the Shah-i-Kot plain is the hazy flat behind the crest), the crest
 descends to the right, so right is north and the outcrop lies down-crest north of the Chinook, about 90-150 m by the
@@ -205,3 +208,63 @@ apnews.com returns 403 and AP Images is a licensed archive, so I could not look 
 (the *Weapon of Choice* PDF) and globalsecurity.org are blocked or paywalled for downloads here, and history.army.mil,
 af.mil and nationalmuseum.af.mil return 403. DVIDS and Esri tiles are reachable. The Drive connector returns no text for
 image files, so I could not read the user's screenshots (including any with Blaber's orientation); attaching them in chat works.
+
+## The user's Google Drive (accessed via the Drive connector)
+
+**Access.** The connector lists and searches files and reads text files (md, txt, html). For images, `read_file_content`
+returns nothing, but `download_file_content` returns the bytes (base64, saved to a tool-result file), which decode into real
+images. In this session I pulled 45 images from the "aar roberts ridge" and "blaber aar photos" folders, and the KML
+(`Takur_Ghar_Battlefield.kml`). Not read: the MP4s (84 MB), the PDFs, the GPKG/QGZ/KMZ/OBJ files. `decode_drive.py` is not in
+this repository; the images and the KML are the user's files and are not copied here.
+
+**What the images are.** Time-stamped annotated Predator infrared frames with labels (Enemy 1/2, Red Beard, B1, B2, R1, R2,
+trench, DSHK, donkey, Roberts, Chapman; "Pic taken 2 days after (note steepness of terrain)", "FP1 FP2 are good fighting
+positions with defilade, Mako went here initially, then Rangers fought from the positions for 13-15 hours", "Ammo supply point
+behind R2"); a top-down schematic series (CSAR infil 04:57, actions 04:57-05:11, movement off the X 05:13, QRF infil/shootdown in
+Razor 01 06:14) with a north arrow; ground photographs after the battle (wreckage, positions, remains, a helmet marked CROSE; some
+are graphic); a 3D overview of the Anaconda area; *Milani* figures 8 and 9 (enemy bunker, command tent); a grey ridge photo; and
+four unrelated phone screenshots of soldiers, which I did not use.
+
+**Orientation measured from the schematic.** Its north arrow points 66.9 deg clockwise from page-up (principal axis of the arrow
+pixels), so page-up is bearing 293 (WNW), page-right 23 (NNE). That agrees with the Naylor sketch ("W" arrow pointing up, my earlier
+reading) to within the 25 deg tolerance I gave it, and with Copeland et al.'s "vertical cliff to the right (north-east)". On the
+schematic, the Rocky Outcropping lies SE of B1 (bearing about 127, about 50-75 m) and R1 lies WSW of B1; B2 is NNW of R1.
+
+**The user's KML already holds a working placement.** Folder "Summit schematic features (approx., from AAR deck)": Bunker 1
+33.342744 N 69.213987 E, Bunker 2 33.342811 69.213791, Rock 1 "the boulder (low rock outcrop)" 33.342750 69.213932, Rock 2
+33.342680 69.213639, DShK 33.342653 69.213488, LZ Razor 01 33.342145 69.214099, FP1, FP2, "Huge rock outcrop (anchors the saddle)"
+33.342055 69.215377, each "placed from Blaber slide schematic on SRTM terrain; approximate (tens of metres)". The anchor is
+the working summit point 33.3421 69.2138, which is the OpenStreetMap/NGA peak node. Distances from the KML boulder: B1 5 m,
+terrain high point 43 m, KML LZ 69 m, OSM peak 69 m, Predator HUD fix 185 m (bearing 271), my candidate band 288 m (bearing 319).
+
+### Competing placements, and a test (`schematic_register.py`)
+
+Two placements for the bunker complex now compete: the KML's, at the summit on the highest ground, and my candidate rock band
+215 m north of the Predator fix (3,045 m, about 125 m below the high point). `schematic_register.py SLIDE.png` drops the slide's
+green tree blobs onto the June 2021 imagery under four anchor assumptions and compares the share of tree area landing on detected
+conifer canopy with 2,000 random placements (same orientation and scale; 0.285 m per page pixel, from "Rangers about 60 m from the
+bunkers", which is also what the KML implies; 0.2 as a sensitivity check):
+
+| Anchor | On canopy (0.285 m/px) | Random median / 95th | Share of random placements as good |
+|---|---|---|---|
+| A  Razor 01 symbol = Predator HUD fix | 0.5% | 2.4% / 15.5% | 70% |
+| B  outcrop = terrain high point | 4.2% | 2.6% / 17.4% | 40% |
+| C  outcrop = candidate rock band | 24.9% | 2.7% / 16.8% | **1.1%** |
+| D  Razor 01 symbol = KML LZ | **0.0%** | 2.5% / 15.2% | 100% |
+
+At 0.2 m/px, C drops to 5.4% (33% of random placements do as well); A, B and D stay at or below chance. In the 2021 image the
+nearest detected conifer to the KML's B1, B2, Rock 1, Rock 2, DShK and LZ is 28 to 43 m away, with none within 15 m, and the
+wide view shows open ground around them with the conifers to the north and north-west.
+
+How to read this, honestly:
+
+* The KML placement is **not corroborated by trees** in 2021. The sources describe a big pine at B1 and a second tree at B2 (the
+  user's own ledger notes a "splintered stump" and Ground Truth's 2024 "first tree"), so the trees may have been destroyed in
+  2002 or later, may be small dwarf pines my canopy mask misses, or the KML anchor may be shifted by 30 m or more.
+* My candidate fits the trees better at one scale (about 1% of random placements, but 6 combinations were tried, so about 7%
+  after correcting for that), and fails at the other scale. It is also 125 m below the high point, against the sources' "atop
+  the peak". I would not rely on it. It stays here as the best-fitting alternative, not as an identification.
+* The Predator HUD point is 213 m west-north-west of the KML LZ (a 3.4 deg pointing difference at the frame's 1.93 nm slant
+  range). That is plausible for a 2002 sensor aim point but I could not verify it, so I cannot say which is wrong.
+* Settling it needs something the satellite image can't give: the user's 2024 summit-walk frames (tree pair, cliff rim, boulder)
+  matched against the terrain, or a photo whose camera position is known.
