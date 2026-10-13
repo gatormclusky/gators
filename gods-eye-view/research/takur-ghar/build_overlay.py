@@ -6,28 +6,27 @@ Everything here is a *derived or schematic* position, not a surveyed one. Inputs
   in published accounts). Bunkers, landing zone (LZ) and Ranger fighting position all sit within ~60-100 m of
   it (Copeland et al. 2021, Fig. 3 and text) which is below this DEM's ~31 m cell size to resolve, so they are
   one marker.
-* Chalk 2 landing elevation: the account says Chalk 2 landed "over 600 m below the summit" / "2,000 feet below
-  the primary LZ" and then climbed "a northeast facing slope" for over two and a half hours (Copeland et al.
-  2021, citing Macpherson 2005). That is a vertical drop (~610 m), i.e. an elevation of about 2,576 m. The only
-  thing the sources fix is that elevation, so this layer is the ~2,576 m contour band (+/-10 m) within 6 km of
-  the summit. The landing is somewhere along it; the sources do not say where.
-  An attempt to also pick out a "candidate area" by requiring a steep northeast-facing slope that leads up to
-  the summit left only 2 cells in the whole box (about 5.9 km out), and a version without the "leads up to the
-  summit" test put most cells on the far side of the valley. Neither was defensible, so no area is claimed.
+* Chalk 2 landing arc: the Army's history (Folse 2022, p. 62) says a second MH-47 "landed a team of thirteen
+  Rangers ... 600 meters down the slope" and that they had to climb to the top. That is a distance along the
+  slope, not a height drop. (Copeland et al. 2021 say "over 600 meters below the summit" and "2,000 feet below",
+  which I first read as a 610 m drop in elevation. In this terrain model no ground within 8 km east or south-east of
+  the summit is 610 m lower, so that reading cannot be right; the Army wording fits.) Direction: both schematics
+  show the approach from the east / south-east. The layer is therefore an arc at 600 m from the summit complex
+  across bearings 70-150 deg, with the terrain elevation along it. It is an arc of possibilities, not a location,
+  and the landing zone may not be at the summit marker exactly.
 * Headings: bearings read from Naylor's sketch (via Battlecast) and Copeland et al. Fig. 3, see HEADINGS below.
 * Razor 03 crash ring: the Army SOF history puts tail 476 about 6 km from Takur Ghar; the geographic analysis
   says Razor 03 made a controlled crash "away from the peak". Direction is not given in either source, so this
   is a 6 km ring around the summit (clipped to the box). Mapping Razor 03 to tail 476 is an inference.
 
 Usage: python3 build_overlay.py NASADEM_HGT_n33e069.tif
-Writes overlay.json and overlay_chalk2.png
+Writes overlay.json
 """
 import json
 import sys
 import numpy as np
 import rasterio
 from rasterio.windows import from_bounds
-from PIL import Image
 
 BOX = (69.15, 33.30, 69.28, 33.40)
 PUB = (69.21, 33.34)
@@ -64,18 +63,20 @@ summit["osm_peak"] = OSM
 dist = np.hypot(X - X[r0, c0], Z - Z[r0, c0])
 dx, dz = X[0, 1] - X[0, 0], Z[1, 0] - Z[0, 0]
 
-# Chalk 2 landing elevation: ~610 m (2,000 ft) below the 3,186 m summit.
-target = 3186 - 609.6
-cand = (np.abs(z - target) <= 10) & (dist <= 6000) & (dist > 0)
+# Chalk 2 landing arc: 600 m from the summit across the east / south-east sector the schematics show.
+ARC_R, ARC_B = 600.0, list(range(70, 151, 10))
+arc_pts, arc_elev = [], []
+for bdeg in range(ARC_B[0], ARC_B[-1] + 1, 2):
+    x = X[r0, c0] + ARC_R * np.sin(np.radians(bdeg))
+    zz = Z[r0, c0] - ARC_R * np.cos(np.radians(bdeg))
+    c = int(round((x - X[0, 0]) / dx)); r = int(round((zz - Z[0, 0]) / dz))
+    arc_pts.append([float(x), float(z[r, c] * EXAG + 12), float(zz)])
+    if bdeg % 10 == 0:
+        arc_elev.append({"bearing": bdeg, "elev_m": float(z[r, c]), "drop_from_summit_m": float(z[r0, c0] - z[r, c])})
 print(f"summit {summit['elev_m']:.0f} m at {summit['lat']:.4f}N {summit['lon']:.4f}E; "
       f"{summit['offset_from_published_coord_m']:.0f} m from the rounded 33.34N 69.21E, "
       f"{summit['osm_peak']['distance_from_dem_summit_m']:.0f} m from the OSM peak node")
-print(f"{target:.0f} m contour band cells: {cand.sum()}; dist to summit min/median/max "
-      f"{dist[cand].min():.0f}/{np.median(dist[cand]):.0f}/{dist[cand].max():.0f} m")
-
-img = np.zeros((h, w, 4), "uint8")
-img[cand] = (255, 150, 40, 215)
-Image.fromarray(img).save("overlay_chalk2.png")
+print("arc at 600 m:", ", ".join(f"{e['bearing']} deg: {e['elev_m']:.0f} m (drop {e['drop_from_summit_m']:.0f})" for e in arc_elev))
 
 # Razor 03 crash ring: 6 km around the summit, sampled on the terrain, clipped to the box.
 ring = []
@@ -88,11 +89,6 @@ for ang in np.linspace(0, 2 * np.pi, 361):
         ring.append([float(x), float(z[r, c] * EXAG + 20), float(zz)])
     else:
         ring.append(None)
-
-# Label anchor: the band cell nearest the band's median position.
-rr, cc = np.nonzero(cand)
-k = np.argmin((rr - np.median(rr)) ** 2 + (cc - np.median(cc)) ** 2)
-label_model = to_model(rr[k], cc[k])
 
 # Directions from the Rangers' position / LZ (all within ~100 m of the summit marker). Bearings are true compass
 # bearings read from two schematic figures, so +/- 25 deg at best, and distances are NOT to scale:
@@ -119,8 +115,8 @@ HEADINGS = [
 out = {
     "summit": summit,
     "headings": HEADINGS,
-    "chalk2": {"texture": "overlay_chalk2.png", "cells": int(cand.sum()), "elev_m": float(target), "label_model": label_model,
-               "criteria": "elevation 2576 +/- 10 m (610 m below the 3,186 m summit), within 6 km of the summit"},
+    "chalk2": {"radius_m": ARC_R, "bearings": [ARC_B[0], ARC_B[-1]], "points": arc_pts, "elev_along_arc": arc_elev,
+               "basis": "Army history (Folse 2022): 600 m down the slope; direction from Naylor 2005 sketch and Copeland et al. Fig. 3"},
     "ring6km": ring,
 }
 json.dump(out, open("overlay.json", "w"))

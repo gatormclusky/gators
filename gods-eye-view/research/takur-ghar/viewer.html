@@ -41,29 +41,29 @@
   <label class="note"><input type="checkbox" id="sunon"> Show sun and cast shadows (terrain only)</label>
   <label class="note">Local time (UTC+4:30) <input id="tod" type="range" min="0" max="79" step="1" value="29" disabled> <b id="todv">10:20</b></label>
   <label class="note"><input type="checkbox" id="grey" disabled> Grey terrain (hides the Landsat's own shading)</label>
-  <div class="note" id="sunv">Sun az -, el -. Sunrise 06:11, sunset 17:58. The satellite texture already contains its own shading from its pass (about 10:20 local), so use the grey option to judge shadows.</div>
+  <div class="note" id="sunv">Sun az -, el -. The sun is at the horizon about 06:20 and 17:51 (civil twilight 05:54 to 18:18); the first three events above were in full darkness. The satellite texture already contains its own shading from its pass (about 10:20 local), so use the grey option to judge shadows.</div>
 
   <h2>Overlay</h2>
   <label class="layer"><input type="checkbox" id="L_summit" checked><span class="sw" style="background:#ff2020"></span>
     <span>Summit complex <span class="tag">sourced, ~100 m</span></span></label>
   <label class="layer"><input type="checkbox" id="L_chalk2" checked><span class="sw" style="background:#ff7040"></span>
-    <span>Chalk 2 landing elevation (~2,576 m) <span class="tag">elevation only</span></span></label>
+    <span>Chalk 2 landing arc (600 m down-slope, E/SE) <span class="tag">distance: Army; direction: sketches</span></span></label>
   <label class="layer"><input type="checkbox" id="L_head" checked><span class="sw" style="background:#ffffff"></span>
     <span>Headings from the summit complex <span class="tag">schematic, direction only</span></span></label>
   <label class="layer"><input type="checkbox" id="L_ring" checked><span class="sw" style="background:#ffd23f"></span>
     <span>Razor 03 crash: 6 km ring <span class="tag">direction unknown</span></span></label>
   <div id="info">Click a layer's name to read how it was derived and its source.</div>
 
-  <h2>Sequence (Copeland et al. 2021)</h2>
+  <h2>Sequence, 4 March 2002</h2>
   <ol>
-    <li>Night of 3-4 Mar: an AC-130 infrared sweep declares the summit landing zone (LZ) "cold".</li>
-    <li>Razor 03 (MAKO 30, SEAL team) flares to land on the summit and is hit by an RPG. Neil Roberts falls out; the aircraft makes a controlled crash away from the peak.</li>
-    <li>Razor 04 recovers the crew to Gardez, then reinserts MAKO 30 at the same LZ under heavy fire. Roberts is not found and the team breaks contact.</li>
-    <li>Ranger quick reaction force from Bagram: Razor 01 (Chalk 1) lands at the same LZ and crash-lands under RPG fire.</li>
-    <li>Razor 02 (Chalk 2) lands over 600 m below the summit; the Rangers climb a northeast-facing slope for 2.5+ hours to reach Chalk 1.</li>
-    <li>Strafing runs and a Predator Hellfire on the main bunker; the Rangers take the summit and wait for dark to exfiltrate.</li>
+    <li><b>02:45</b> The first MH-47 (Razor 03, MAKO 30) nears the summit; an RPG hits it, Neil Roberts falls out, the pilot aborts. <span class="tag">sun 44° below horizon</span></li>
+    <li><b>04:57</b> MAKO 30 lands again to rescue him; Chapman charges a bunker, Roberts is found dead, the team pulls back and calls in an AC-130. <span class="tag">sun 18° below</span></li>
+    <li><b>~05:20</b> Drone footage shows Chapman recovering and fighting on alone for about 45 minutes. <span class="tag">sun 13° below</span></li>
+    <li><b>06:05</b> A Ranger MH-47 (Razor 01, Capt. Self) lands under fire and crash-lands; three Rangers are mortally wounded leaving it. <span class="tag">sun 3.5° below, civil twilight</span></li>
+    <li>A second MH-47 puts Canon&#39;s 13 Rangers (Chalk 2) <b>600 m down the slope</b>; they climb for 2.5+ hours under 82 mm mortar fire.</li>
+    <li>F-16s and Predator Hellfires disable the bunkers; the peak is cleared by <b>11:30</b>. Several counterattacks follow; extraction is after nightfall.</li>
   </ol>
-  <div class="note">17-hour fight; 7 US killed, 2 MH-47E lost.</div>
+  <div class="note">Times are as printed in the Army history (Folse 2022, pp. 60-62), which doesn&#39;t state a time zone; I&#39;ve assumed local (UTC+4:30). Detail from Copeland et al. 2021. 7 Americans died (1 SEAL, 2 Air Force, 4 Army); the Army counts the summit as about 3,160 m.</div>
 
   <h2>Read this</h2>
   <div class="note">Terrain: NASADEM (SRTM-derived, Feb 2000), ~31 m. Texture: Landsat, 30 m, Sep and Mar 2002.
@@ -86,9 +86,8 @@ const INFO = {
     'Per Copeland et al. (2021): enemy bunkers, a DShK heavy machine gun and mortar positions on the peak; a bowl-shaped, snow-covered LZ about 60 m from the bunkers; ' +
     'the Ranger fighting position beside the LZ; the northeast flank was a vertical cliff. Razor 03 was hit landing here, Razor 04 reinserted here, Razor 01 crash-landed here. ' +
     'All of it sits within ~100 m, which this 31 m terrain can\'t separate, so it is one marker.',
-  chalk2: '<b>Chalk 2 landing elevation.</b> Razor 02 put Chalk 2 "over 600 m below the summit" (about 2,000 ft below the LZ) and they climbed a northeast-facing slope for over 2.5 hours (Copeland et al. 2021, citing Macpherson 2005). The orange band is the terrain at about 2,576 m within 6 km of the summit. ' +
-    '<b>Unresolved:</b> Naylor\'s sketch and Copeland\'s Figure 3 both show Chalk 2 arriving from the east or south-east, but in this terrain model there is no ground near 2,576 m east or south-east of the summit within 8 km (it is 2,800-3,300 m there); the 2,576 m ground is west and north-west, on the valley side. ' +
-    'Either "2,000 feet below" or the direction (or this elevation model) is off, so no landing spot is claimed.',
+  chalk2: '<b>Chalk 2 landing arc.</b> The Army history (Folse 2022) says a second MH-47 put 13 Rangers under S. Sgt. Canon "600 meters down the slope", and they climbed to the top under mortar fire. Both Naylor\'s sketch and Copeland\'s Fig. 3 show them arriving from the east / south-east. The orange line is 600 m from the summit marker across bearings 70-150 deg; the ground along it is 65-250 m lower than the summit. ' +
+    'It is an arc of possibilities, not a location. <b>Correction:</b> I first read Copeland\'s "2,000 feet below" as a 610 m drop in height and drew the 2,576 m contour; no ground east of the summit is that low, and the Army\'s wording (a distance down the slope) fits instead, so that layer was removed.',
   head: '<b>Headings</b> read from two schematics: Naylor (2005), "Razor 01 assault on Al Qaida bunker atop Takur Ghar" (as reproduced on thebattlecast.com), whose compass arrow is labelled "W" and points up, so west is up on that sketch; and Copeland et al. Fig. 3. ' +
     'They agree that the bunkers are north-west of the Rangers\' position and that Chalk 2 came from the east. Bearings are good to about 25 deg and lengths mean nothing (the sketches are not to scale). The arrows start at the summit marker because the whole complex is within about 100 m. ' +
     'The orientation read from the W arrow is mine; if you can check it against the book, do.',
@@ -180,14 +179,17 @@ Promise.all([
   summit.add(cone, ringM, lab); summit.position.set(sx, sy, sz);
   world.add(summit); layers.summit = summit;
 
-  // Chalk 2 candidate area: transparent copy of the terrain carrying the highlight texture
-  const ot = tl.load(ov.chalk2.texture, (t) => { t.flipY = false; t.colorSpace = THREE.SRGBColorSpace; });
-  const chalk = new THREE.Mesh(mesh.geometry, new THREE.MeshBasicMaterial({
-    map: ot, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
-  chalk.renderOrder = 2;
-  const cg = new THREE.Group(); cg.add(chalk);
-  const clab = label('Chalk 2: ~2,576 m', '#ffb060');
-    clab.position.set(...ov.chalk2.label_model); clab.position.y += 700; cg.add(clab);
+  // Chalk 2 landing arc: 600 m from the summit across the E/SE sector the schematics show
+  const cg = new THREE.Group();
+  const apts = ov.chalk2.points.map((p) => new THREE.Vector3(...p));
+  cg.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(apts), new THREE.LineBasicMaterial({ color: 0xff9a30 })));
+  // a few tick posts so the arc reads in 3D
+  for (let i = 0; i < apts.length; i += 5) {
+    cg.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([apts[i], apts[i].clone().add(new THREE.Vector3(0, 260, 0))]), new THREE.LineBasicMaterial({ color: 0xff9a30 })));
+  }
+  const clab = label('Chalk 2: ~600 m down-slope', '#ffb060');
+  const amid = apts[Math.floor(apts.length / 2)];
+  clab.position.set(amid.x, amid.y + 650, amid.z); cg.add(clab);
   world.add(cg); layers.chalk2 = cg;
 
   // Razor 03 ring (contiguous runs inside the box)
@@ -239,7 +241,7 @@ function setSun() {
   if (!row) return;
   document.getElementById('todv').textContent = row.t;
   document.getElementById('sunv').textContent = on
-    ? `Sun azimuth ${row.az.toFixed(0)} deg, elevation ${row.el.toFixed(0)} deg${row.el < 0 ? ' (sun below the horizon)' : ''}. Sunrise 06:11, sunset 17:58. Terrain shadows only: no snow, rocks, cloud or night.`
+    ? `Sun azimuth ${row.az.toFixed(0)} deg, elevation ${row.el.toFixed(0)} deg${row.el < 0 ? ' (sun below the horizon)' : ''}. Terrain shadows only: no snow, rocks, cloud or night.`
     : document.getElementById('sunv').textContent;
   if (!on) return;
   const az = THREE.MathUtils.degToRad(row.az), el = THREE.MathUtils.degToRad(Math.max(row.el, 0.5));

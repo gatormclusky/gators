@@ -37,16 +37,17 @@ Three layers, each with its derivation shown in the viewer. None is a surveyed p
 |---|---|---|
 | Summit complex | Highest terrain cell near the usual coordinate: 3,172 m at 33.3429 N 69.2135 E | Copeland et al. 2021: bunkers, DShK, LZ (~60 m from the bunkers) and Ranger fighting position all on the summit; too close together for a 31 m DEM, so one marker. **Location check:** OpenStreetMap's peak node for Takur Ghar (from the NGA names database, 33.3421 N 69.2138 E, 3,191 m) is 90 m from this cell. The rounded 33.34 N 69.21 E that I used first is 456 m away and would have been wrong. |
 | Headings | Six direction arrows from the summit marker (bunkers NW ~315 deg, cliff NE ~30, rocky hill ENE ~66, Chalk 2 inbound from ~110 deg, Razor 01 wreck SSW ~206, MAKO 30 second site WSW ~256) | Read from Naylor 2005, "Razor 01 assault on Al Qaida bunker atop Takur Ghar" (as reproduced on thebattlecast.com) and Copeland et al. Fig. 3. Direction only (about +/-25 deg), lengths mean nothing. **My reading of the Naylor sketch: its compass arrow is labelled "W" and points up, so west is up.** Copeland's figure independently agrees on the bunkers (NW) and Chalk 2 (from the east). Please check against the book. |
-| Chalk 2 landing elevation | The ~2,576 m contour band (+/-10 m) within 6 km of the summit | "Over 600 m / 2,000 ft below" the summit (Copeland et al., citing Macpherson 2005). The elevation is all the sources fix, and see the problem below |
+| Chalk 2 landing arc | A line 600 m from the summit marker across bearings 70-150 deg (ground there is 65-250 m lower than the summit) | **Distance:** the Army history (Folse 2022, p. 62): a second MH-47 landed 13 Rangers under S. Sgt. Canon "600 meters down the slope". **Direction:** both schematics put Chalk 2's approach to the east/south-east. An arc of possibilities, not a location. |
 | Razor 03 crash ring | 6 km circle around the summit | Army SOF history puts tail 476 about 6 km from Takur Ghar; Razor 03 "crashed away from the peak". No direction given; treating 476 as Razor 03 is an inference |
 
 Known problems:
 
-* **Chalk 2: elevation and direction disagree.** Both schematics put Chalk 2's approach to the east or south-east, but
-  in this terrain model there is no ground near 2,576 m east or south-east of the summit within 8 km (it is 2,800-3,300
-  m there). The 2,576 m ground is west and north-west, on the valley side. Either "2,000 feet below", the direction, or
-  the elevation model is off, so no landing spot is claimed. Requiring a steep north-east-facing slope that leads up
-  to the summit leaves 2 cells in the whole box; an earlier version without that test was misleading and was dropped.
+* **Correction (Chalk 2).** I first read Copeland et al.'s "over 600 meters below the summit / 2,000 feet below" as a
+  610 m drop in height and drew the 2,576 m contour band. No ground within 8 km east or south-east of the summit is
+  that low (it is 2,800-3,300 m there), so that reading could not match the schematics. The Army history says "600
+  meters down the slope", a distance along the slope, which fits, so the band was removed and replaced by the arc.
+  The Rangers' climb took 2.5+ hours against a 45-minute estimate, so the landing is probably not simply 600 m in a
+  straight line; treat the arc as the least the sources support.
 * Not placed: the Razor 03 crash site, the "mosque" landmark in Figure 3, the Predator's orbit, and any clock times
   (the sources give a sequence, not times, apart from "night of 3-4 March", the 17-hour duration and sunset exfiltration).
 * The summit marker is the terrain high point, 14-19 m below the published 3,186 m / OSM 3,191 m (SRTM error). The Naylor
@@ -62,7 +63,10 @@ Also here: `dem_check.py` (void/slope check), `REQUESTS.md` (imagery requests an
 ## Sun and shadow, 4 March 2002 (`sun_viewshed.py` -> `analysis.json`, `sun_shadow.png`, `sun.json`)
 
 Terrain only. The sun model (astral, at the summit, Afghanistan time UTC+4:30) matches the Landsat 7 pass of 5 Mar
-2002 05:49:50 UTC (metadata az 141.5 / el 43.0 deg; computed 142.8 / 43.4). Sunrise 06:11, sunset 17:58.
+2002 05:49:50 UTC (metadata az 141.5 / el 43.0 deg; computed 142.8 / 43.4). The sun is at the geometric horizon
+at about 06:20 and 17:51 (civil twilight 05:54 to 18:18). (astral's own "sunrise 06:11 / sunset 17:58" includes the
+horizon dip for an observer on open ground at 3,172 m, which does not apply among mountains; I quoted it earlier and
+it was wrong for this purpose.)
 
 | | |
 |---|---|
@@ -82,3 +86,31 @@ shadows from the same sun table; use "Grey terrain" because the Landsat textures
 swings with an assumed observer height: ground within 2 km counted as visible is 3% at 2 m, 15% at 6 m and 34% at 12
 m, because the blocking terrain near the summit is only a few metres high, inside SRTM's error. A bilinear
 re-check agreed with the code, so this is a data limit, not a bug. I did not commit `viewshed.png` for that reason.
+
+### The Army's clock times against the sun (`chalk2_sun.py` -> `chalk2_sun.json`)
+
+Times from the Army history (Folse 2022, pp. 60-62), which prints no time zone; I assumed local (UTC+4:30):
+
+| Time | Event | Sun elevation at the summit |
+|---|---|---|
+| 02:45 | First MH-47 (Razor 03, MAKO 30) at the summit; RPG; Roberts falls | -44 deg (full darkness) |
+| 04:57 | MAKO 30 lands again; Chapman charges the bunker | -18 deg |
+| ~05:20 | Drone shows Chapman fighting on, about 45 min | -13 deg |
+| 06:05 | Ranger MH-47 (Razor 01) lands and crash-lands; Chalk 2 lands 600 m down the slope | -3.5 deg (civil twilight) |
+| 11:30 | Peak cleared | +49 deg |
+
+Terrain-only direct sun: the summit is lit from about 07:00; points on the 600 m arc between bearings 90 and 150 deg from
+about 07:00, and at 70 deg only from about 08:30. So the Rangers began their climb before sunrise and were in
+terrain shade or low sun for roughly the first hour.
+
+## Orientation imagery (`orient_imagery.py`)
+
+Best free imagery: **Esri World Imagery** (free to view in a browser or Google Earth-style apps). Esri's metadata service
+reports Vantor (ex-Maxar) "Vivid" imagery over the summit captured 9 June 2021 at 0.5 m resolution. It is summer,
+nearly 20 years after the battle, an orthophoto (looking straight down), and low in contrast. `orient_imagery.py` fetches
+it on the fly and draws north, a scale bar, the OSM and terrain summit points, the headings and a 100 m "summit complex"
+search zone. The imagery is not stored in this repository (Esri's terms apply).
+
+The boulder bunker is not identifiable in it by me. The sourced clues for finding it: the bunkers and DShK sit at the
+top, north-west of the Rangers' bowl-shaped landing zone (about 60 m away), with a vertical cliff on the north-east edge
+and a lone "bonsai" tree beside the boulder (Naylor sketch). Look within about 100 m of the two summit points.
