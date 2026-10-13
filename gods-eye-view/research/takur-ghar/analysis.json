@@ -1,0 +1,61 @@
+{
+  "date": "2002-03-04",
+  "tz": "UTC+4:30",
+  "samples_20min": 33,
+  "summit_direct_sun_h": 11.000000000000002,
+  "box_median_direct_sun_h": 9.666666666666666,
+  "steep_NE_facing_median_sun_h": 7.9999999999999964,
+  "steep_NE_facing_cells": 5391,
+  "steep_E_facing_median_sun_h": 8.666666666666664,
+  "steep_E_facing_cells": 4996,
+  "steep_S_facing_median_sun_h": 10.0,
+  "steep_S_facing_cells": 3671,
+  "steep_SW_facing_median_sun_h": 9.666666666666666,
+  "steep_SW_facing_cells": 4244,
+  "steep_W_facing_median_sun_h": 8.999999999999998,
+  "steep_W_facing_cells": 10522,
+  "steep_N_facing_median_sun_h": 8.666666666666664,
+  "steep_N_facing_cells": 7102,
+  "chalk2_elev_band_median_sun_h": 10.333333333333334,
+  "chalk2_elev_band_cells": 4967,
+  "sunlit_fraction_at": {
+    "08:00": 0.7609211775878443,
+    "10:20": 0.9933582621082621,
+    "14:00": 0.9887523741690408,
+    "16:30": 0.80252849002849
+  },
+  "summit_sunlit_at": {
+    "08:00": true,
+    "10:20": true,
+    "14:00": true,
+    "16:30": true
+  },
+  "viewshed_sensitivity_by_observer_height_m": {
+    "2.0": {
+      "1": 0.007068921989396617,
+      "2": 0.03394535932866427,
+      "4": 0.3048124122038607,
+      "6": 0.35829354277299297
+    },
+    "6.0": {
+      "1": 0.026508457460237313,
+      "2": 0.14909458009969084,
+      "4": 0.45068421800274633,
+      "6": 0.4280571794070835
+    },
+    "12.0": {
+      "1": 0.07371875788942187,
+      "2": 0.337813111237302,
+      "4": 0.5214735546190634,
+      "6": 0.4630208100911836
+    }
+  },
+  "viewshed_fraction_within_km": {
+    "1": 0.007068921989396617,
+    "2": 0.03394535932866427,
+    "4": 0.3048124122038607,
+    "6": 0.35829354277299297
+  },
+  "chalk2_elev_band_visible_from_summit": 0.50332192470304,
+  "valley_floor_(<2650m)_visible_from_summit": 0.5745289409639461
+}

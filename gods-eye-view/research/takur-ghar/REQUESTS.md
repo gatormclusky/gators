@@ -47,6 +47,8 @@ Sensor, capture date/time (UTC), off-nadir angle, resolution, cloud/snow cover, 
 | Copeland et al., "The Battle of Takur Ghar: A Geographic Analysis" | Terrain analysis; uses 2018 Maxar imagery and aerial lidar obtained through NGA (not public) | https://msaag.aag.org/wp-content/uploads/2022/06/8-Copeland-et-al-MSG54-2021.pdf |
 | Army War College paper (DTIC ADA414541) | Predator feed and command situational awareness | https://apps.dtic.mil/sti/pdfs/ADA414541.pdf |
 
+| Battlecast atlas page | Reproduces the Naylor (2005) Razor 01 assault sketch (west-up compass), the Naylor Anaconda landing-zone map and a drone infrared still of Slabinski's team and Chapman, 4 Mar 2002 (from Folse 2022, Army CMH). Blog, secondary; the figures are the value | https://thebattlecast.com/2024/10/18/a-historical-atlas-of-the-battle-of-takur-ghar/ |
+
 Open question: the sources disagree on where the downed aircraft sat (SOF history puts 476
 about 6 km from the peak; DVIDS captions a Chinook "atop" Takur Ghar). Resolve before plotting.
 No 2002 commercial satellite image of Takur Ghar was found in public sources.
