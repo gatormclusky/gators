@@ -130,6 +130,12 @@ const TOOLS = [
     },
   },
   {
+    name: 'list_maps',
+    description: 'List all uploaded maps (map_id, filename, size, upload time), newest first.',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+    run: async () => text(await apiJson('/api/maps')),
+  },
+  {
     name: 'preview_map',
     description: 'Fetch the preview image of an uploaded map and return it as an image.',
     inputSchema: {

@@ -55,6 +55,23 @@ class FileHandler:
         
         return None
     
+    def list_files(self) -> list:
+        """List uploaded maps, newest first (stat only, no image decoding)"""
+        maps = []
+        for map_id in os.listdir(self.maps_dir):
+            filepath = self.get_file_path(map_id)
+            if not filepath:
+                continue
+            stat = os.stat(filepath)
+            maps.append({
+                'map_id': map_id,
+                'filename': os.path.basename(filepath),
+                'size': stat.st_size,
+                'uploaded_at': datetime.fromtimestamp(stat.st_mtime).isoformat(),
+            })
+        maps.sort(key=lambda m: m['uploaded_at'], reverse=True)
+        return maps
+
     def get_model_path(self, model_id: str, format: str) -> str:
         """Get path to 3D model"""
         return os.path.join(self.models_dir, f"{model_id}.{format}")

@@ -26,6 +26,7 @@ before(async () => {
       assert.ok(body.includes('name="type"') && body.includes('terrain'));
       return json(200, { status: 'success', map_id: 'abc-123' });
     }
+    if (req.url === '/api/maps') return json(200, { count: 1, maps: [{ map_id: 'abc-123', filename: 'm.png' }] });
     if (req.url === '/api/maps/abc-123/preview') { res.writeHead(200, { 'content-type': 'image/png' }); return res.end(PNG); }
     if (req.url === '/api/maps/abc-123/convert3d') return json(200, { echo: JSON.parse(body), model_id: 'm-1' });
     if (req.url.startsWith('/api/models/m-1/download')) { res.writeHead(200); return res.end('GLB'); }
@@ -60,7 +61,7 @@ test('initialize and list tools', async () => {
   child.stdin.write('{"jsonrpc":"2.0","method":"notifications/initialized"}\n');
   const list = await rpc('tools/list');
   assert.deepEqual(list.result.tools.map((t) => t.name),
-    ['health', 'upload_map', 'batch_upload_maps', 'preview_map', 'analyze_map', 'convert_to_3d', 'download_model']);
+    ['health', 'upload_map', 'batch_upload_maps', 'list_maps', 'preview_map', 'analyze_map', 'convert_to_3d', 'download_model']);
 });
 
 test('health, upload, preview, convert, download', async () => {
@@ -70,6 +71,8 @@ test('health, upload, preview, convert, download', async () => {
   await writeFile(file, PNG);
   const up = await call('upload_map', { file_path: file, type: 'terrain' });
   assert.match(up.result.content[0].text, /abc-123/);
+
+  assert.match((await call('list_maps', {})).result.content[0].text, /abc-123/);
 
   const prev = await call('preview_map', { map_id: 'abc-123' });
   assert.equal(prev.result.content[0].type, 'image');

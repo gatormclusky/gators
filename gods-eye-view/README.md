@@ -29,12 +29,13 @@ The mapper's Flask backend listens on port 5000 by default (`2d-3d-mapper/backen
 | `health` | `GET /api/health` | Connectivity check |
 | `upload_map` | `POST /api/maps/upload` | Takes a local `file_path`; returns `map_id` |
 | `batch_upload_maps` | `POST /api/maps/batch-upload` | Several `file_paths` |
+| `list_maps` | `GET /api/maps` | Uploaded maps, newest first |
 | `preview_map` | `GET /api/maps/{id}/preview` | Returned as an inline image |
 | `analyze_map` | `POST /api/maps/{id}/analyze` | |
 | `convert_to_3d` | `POST /api/maps/{id}/convert3d` | scale, exaggeration, resolution, format, smooth, colors, decimation |
 | `download_model` | `GET /api/models/{id}/download` | Saved to `--out-dir`; returns the path |
 
-Typical flow: `upload_map` -> `analyze_map` -> `convert_to_3d` -> `download_model`.
+Typical flow: `upload_map` (or `list_maps` to find an existing one) -> `analyze_map` -> `convert_to_3d` -> `download_model`.
 
 ## Develop
 
