@@ -139,3 +139,69 @@ Other images supplied (no sources given, so provenance is unverified): burned he
 a bare crest; wreckage in a hollow beside a stone-lined pit with snow peaks behind; and a DShK on a tripod in a rock and
 sandbag emplacement above a snowy slope of conifers. They are ground-level references for what to look for, not
 geolocated.
+
+## Ridge photo, DoD Predator reel and a candidate for "the boulder"
+
+Added after the user supplied a long-range ridge photograph (a Chinook wreck on a crest among conifers, a snow strip along
+the crest, and a prominent rock outcrop where the crest descends to the right) and pointed to their Drive notes. Source
+and date of that photo are unverified; the user's Drive ledger says *Weapon of Choice* fig. 16 (p. 310) is a colour ridge
+photograph with a prominent outcrop, which may be the same picture. I could not download the book here to check.
+
+### What the DoD reel is (DVIDS video 618151)
+
+"Air Force Tech. Sgt. John Chapman - ISR Feed Highlights, Takur Ghar, Afghanistan, March 4, 2002" is a public-domain, 90 second
+annotated edit of the Predator infrared feed (https://www.dvidshub.net/video/618151). The coordinate overlay was cropped out,
+so it gives no new fixes. It does give DoD's own captions, "Local Time" stamps, and bunker labels **B1** and **B2** over a
+dark tree clump (frames at 04:28). Frames at 04:27 (Razor 04 inserting the team) and 05:44 (Razor 01) show a Chinook, seen
+from above with rotors turning and small dark (hot) figures leaving its tail, like the frame the user supplied.
+
+| Reel "Local Time" | Reel caption | Army history (Folse 2022) |
+|---|---|---|
+| 04:27 | Razor 04 inserts the team to recover Roberts | MAKO-30 lands 04:57 |
+| 04:28-04:31 | Chapman runs up the slope, charges a bunker, moves on a second machine gun | (same phase) |
+| 05:41 | Chapman "regains his faculties and continues to fight" | recovered ~05:20, fought ~45 min |
+| 05:43-05:44 | Razor 01 incoming, RPGs; Chapman killed | Razor 01 lands 06:05 |
+
+The sources do not share one clock. 04:27 vs 04:57 is a 30-minute gap (what you would get if the reel used UTC+4 and the
+Army UTC+4:30), but the later rows differ by 21 minutes in the opposite direction, so there is no constant offset. I have not
+resolved this; any timeline built from them needs the original clocks.
+
+### The user's HUD frame, timed
+
+Its clock, 01:47:41, is almost certainly Zulu (as 01:47 local would precede the first landing). On the reel's apparent UTC+4
+clock that is 05:47:41, about 3.5 minutes after the reel's last frame, with a Chinook on the ground at the LZ unloading men.
+So the frame is probably Razor 01 at the LZ. That is an inference, not a proof.
+
+### DoD's own words on the summit
+
+American Forces Press Service (reproduced at https://www.dvidshub.net/news/printable/527277), on the 24 May 2002 briefing:
+"There are sheer drops on the west and east sides of the crown of the ridge and only one place to off-load a helicopter";
+"three feet of snow and tree foliage covered two well-fortified enemy bunkers"; "A green command and control tent was hidden
+in a crevice between the rocks." The briefing transcript itself (globalsecurity.org mil-020524-dod01) could not be fetched
+from here (HTTP 402). The user's Drive ledger quotes it as putting "two bunker positions northeast and southeast of a
+prominent rock, at the nearby trees", which I have not verified.
+
+### What the terrain model says
+
+NASADEM (about 26 x 31 m cells): the high point is the north end of a spine that continues south at 3,070-3,145 m and falls
+steeply north (about 175 m in 370 m). East-west slopes either side of the summit are 20-23 degrees (cliffs are below this
+resolution). West of the high point, at the Predator fix, there is a flat bench at 3,100-3,111 m about 180 m long north-south,
+which fits "only one place to off-load a helicopter" and a bowl-shaped LZ.
+
+### Candidate outcrop (LOW confidence)
+
+If the ridge photo was taken from the east looking west (the Shah-i-Kot plain is the hazy flat behind the crest), the crest
+descends to the right, so right is north and the outcrop lies down-crest north of the Chinook, about 90-150 m by the
+fuselage scale (very rough). The Naylor sketch (west up, my reading) also puts the boulder north-west of the Rangers'
+position. In the June 2021 Esri imagery, a jagged light rock band about 50 m wide with dark fractures and conifers on its east
+side is centred about **215 m north of the Predator fix: 33.34472 N 69.21191 E** (terrain 3,045 m; 250 m north-west of the
+terrain high point, about 125 m below it). `orient_imagery.py` draws it as `orient_north_of_fix.png`. Against it: that is
+farther and lower than a bunker complex "atop the peak" should be, the fix is only good to about 100 m, and I cannot tell a
+single prominent rock from a natural rock band at 0.5 m. Treat it as the first place to look in Google Earth.
+
+### Not reachable from this sandbox
+
+apnews.com returns 403 and AP Images is a licensed archive, so I could not look at AP's archived photos; arsof-history.org
+(the *Weapon of Choice* PDF) and globalsecurity.org are blocked or paywalled for downloads here, and history.army.mil,
+af.mil and nationalmuseum.af.mil return 403. DVIDS and Esri tiles are reachable. The Drive connector returns no text for
+image files, so I could not read the user's screenshots (including any with Blaber's orientation); attaching them in chat works.

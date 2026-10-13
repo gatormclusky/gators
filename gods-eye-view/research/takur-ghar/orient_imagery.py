@@ -81,3 +81,52 @@ def render(z, half, crop_r, name, scale_bar_m, upscale=1):
 
 
 render(18, 3, 400, "orient_close.png", 50, upscale=2)
+
+
+# ---- second view: north of the LZ fix, with the candidate outcrop (LOW confidence) ----
+# Candidate: a jagged, light rock band about 50 m wide with dark fractures and conifers on its east side,
+# centred about 215 m north of the HUD fix (33.34472 N 69.21191 E, terrain 3,045 m, 250 m NW of the terrain high point).
+# Why look there: the ridge photo supplied by the user puts a prominent outcrop down-crest (north, if the camera is east of
+# the crest) of the Chinook wreck; the DoD briefing (as cited in the Drive evidence ledger) puts bunkers NE and SE of a
+# prominent rock beside trees. It is 215 m from the fix, farther and lower than a bunker complex "atop the peak" should be,
+# and the fix itself is only good to ~100 m, so treat it as a lead to check, not an identification.
+CAND = (HUD[0] + 215 / M_LAT, HUD[1] - 3 / (111320 * math.cos(math.radians(HUD[0]))))
+
+
+def render_north(name, k=2, z=18):
+    mpp = 156543.03392 * math.cos(math.radians(HUD[0])) / 2 ** z
+    cen = (HUD[0] + 125 / M_LAT, HUD[1]); R = 175 / mpp
+    cx_t, cy_t = tile_xy(z, *cen); cx, cy = int(cx_t), int(cy_t); half = 2
+    mos = Image.new("RGB", ((2 * half + 1) * 256,) * 2)
+    for dy in range(-half, half + 1):
+        for dx in range(-half, half + 1):
+            u = f"https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{cy + dy}/{cx + dx}"
+            mos.paste(Image.open(io.BytesIO(urllib.request.urlopen(u, timeout=40).read())).convert("RGB"), ((dx + half) * 256, (dy + half) * 256))
+    ox, oy = (cx_t - (cx - half)) * 256, (cy_t - (cy - half)) * 256
+    x0, y0 = int(ox - R), int(oy - R)
+    raw = mos.crop((x0, y0, int(ox + R), int(oy + R)))
+    big = raw.resize((raw.size[0] * k, raw.size[1] * k), Image.LANCZOS)
+    im = ImageOps.autocontrast(big, cutoff=1).filter(ImageFilter.UnsharpMask(radius=4, percent=120, threshold=2)).convert("RGBA")
+    lay = Image.new("RGBA", im.size, (0, 0, 0, 0)); d = ImageDraw.Draw(lay); font = ImageFont.load_default(size=20)
+    T = lambda xy, t, f: d.text(xy, t, fill=f, font=font, stroke_width=3, stroke_fill=(0, 0, 0, 255))
+
+    def pix(lat, lon):
+        tx, ty = tile_xy(z, lat, lon)
+        return (((tx - (cx - half)) * 256 - x0) * k, ((ty - (cy - half)) * 256 - y0) * k)
+
+    h = pix(*HUD)
+    d.ellipse([h[0] - 9, h[1] - 9, h[0] + 9, h[1] + 9], outline=(255, 255, 255, 255), width=3)
+    d.line([h[0] - 16, h[1], h[0] + 16, h[1]], fill=(255, 255, 255, 255), width=2); d.line([h[0], h[1] - 16, h[0], h[1] + 16], fill=(255, 255, 255, 255), width=2)
+    T((h[0] + 14, h[1] + 6), "Predator HUD point (Razor 01 LZ?)", (255, 255, 255, 255))
+    c = pix(*CAND); r = 28 / mpp * k
+    d.ellipse([c[0] - r, c[1] - r, c[0] + r, c[1] + r], outline=(255, 235, 80, 255), width=3)
+    T((c[0] - 150, c[1] - r - 28), "candidate outcrop (low confidence)", (255, 235, 80, 255))
+    W, Hh = im.size; bar = 50 / mpp * k
+    d.rectangle([20, Hh - 40, 20 + bar, Hh - 34], fill=(255, 255, 255, 255)); T((20, Hh - 66), "50 m", (255, 255, 255, 255))
+    d.line([(W - 40, 80), (W - 40, 36)], fill=(255, 255, 255, 255), width=4); d.polygon([(W - 40, 24), (W - 48, 42), (W - 32, 42)], fill=(255, 255, 255, 255)); T((W - 47, 86), "N", (255, 255, 255, 255))
+    T((8, Hh - 30), "Esri World Imagery, Vantor, 9 Jun 2021 (not 2002)", (255, 255, 255, 255))
+    Image.alpha_composite(im, lay).convert("RGB").save(f"{out}/{name}")
+    print(name, f"{mpp / k:.2f} m/px", im.size)
+
+
+render_north("orient_north_of_fix.png")
