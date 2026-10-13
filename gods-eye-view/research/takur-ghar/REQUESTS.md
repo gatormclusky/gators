@@ -51,7 +51,7 @@ Sensor, capture date/time (UTC), off-nadir angle, resolution, cloud/snow cover, 
 
 | DVIDS video 618151 | DoD "ISR Feed Highlights", 4 Mar 2002, 90 s, public domain, annotated with local times and B1/B2; HUD cropped | https://www.dvidshub.net/video/618151 (mp4: https://d34w7g4gy10iej.cloudfront.net/video/1808/DOD_105907675/DOD_105907675-1024x576-1769k.mp4) |
 | DVIDS news 527277 | AFPS report of the 24 May 2002 briefing: sheer drops W and E of the crown, one place to off-load a helicopter | https://www.dvidshub.net/news/printable/527277 |
-| Raw Predator feed with HUD | The frame the user supplied is from a version that keeps the coordinate overlay; the Army history cites https://www.youtube.com/watch?v=3oKMjTqdTYo for the declassified footage. Each frame's aim-point coordinate would be a new fix | not fetched (not reachable here) |
+| Raw Predator feed with HUD | The frame the user supplied is from a version that keeps the coordinate overlay; the Army history cites https://www.youtube.com/watch?v=3oKMjTqdTYo for the declassified footage. Each frame's aim-point coordinate would be a new fix, and its azimuth field the frame's own north (the view turns as the aircraft circles; see README), so a few frames across the laps would orient every slide | not fetched (not reachable here) |
 
 Open question: the sources disagree on where the downed aircraft sat (SOF history puts 476
 about 6 km from the peak; DVIDS captions a Chinook "atop" Takur Ghar). Resolve before plotting.

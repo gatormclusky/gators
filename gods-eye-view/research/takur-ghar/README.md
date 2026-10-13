@@ -120,7 +120,8 @@ and a lone "bonsai" tree beside the boulder (Naylor sketch). Look within about 1
 An infrared frame from the Predator feed shows an MH-47 with rotors turning on a snowy slope with a lone pine at the left
 and footpaths in the snow, with a HUD reading **33°20'34"N 69°12'43"E**, **232.79°**, **1.93 nm**, **252 m** and a clock
 of **01:47:41** (no time zone). I read the coordinate as the sensor's aim point (frame centre, where the helicopter is);
-the other numbers I do not know the meaning of (232.79 could be the camera's look direction, 1.93 nm the slant range).
+the other numbers I do not know the meaning of (232.79 could be the camera's look direction, 1.93 nm the slant range;
+see "Which way is north in each infrared frame" below for what the look-direction reading predicts and how it checks out).
 
 * 33.34278 N 69.21194 E, rounded to 1 arc-second (about 31 m north-south, 26 m east-west), and 2002 Predator
   geolocation error is unknown, so I treat it as **+/-100 m**.
@@ -268,3 +269,72 @@ How to read this, honestly:
   range). That is plausible for a 2002 sensor aim point but I could not verify it, so I cannot say which is wrong.
 * Settling it needs something the satellite image can't give: the user's 2024 summit-walk frames (tree pair, cliff rim, boulder)
   matched against the terrain, or a photo whose camera position is known.
+
+## Which way is north in each infrared frame, and why it keeps changing (`frame_orientation.py`)
+
+The user's point: Blaber marked north on his slides and the Predator flew 11 orbits, so the picture is bound to move and change.
+That is the explanation that fits what the slides show, and it means no single north can be applied to the infrared slides.
+
+**Where north is marked.** The four schematic panels (cyan arrow, 66.9 deg clockwise from page-up, identical on all four, see
+above). The oblique battlefield drawing (black and white, Takur Ghar at upper left, AC-130 above, "1 mile" bar) has a "NORTH"
+arrow beside Tergal Ghar pointing right and slightly down; read as a ground arrow in a perspective view, that has the camera
+looking roughly west-south-west (about 240-250 deg; read by eye, not measured). None of the infrared slides, wide or zoomed, carries a
+north marker, so each one needs its own.
+
+**Why the picture turns.** A Predator holds its camera on one spot while it circles, so the look direction sweeps all the way
+round every lap and fixed ground turns on the screen. The supplied material shows it directly:
+
+* The Chinook at the LZ points opposite ways on the screen. In the DoD reel's last frame (reel clock 05:44, slide clock 06:14) its
+  tall aft pylon and tail ramp are on the right, the hot figures are at the tail on the right, and the nose is left. In the HUD frame
+  3.7 minutes later the aft pylon is at the left, a line of hot figures leaves the ramp toward the lower left, and the nose is right.
+  That is about half a turn (165 deg, give or take 30) if the helicopter did not swing on the ground.
+* The wide slides below look toward about 23 deg and the HUD frame toward 233 deg (if 232.79 is the look direction): 150 deg apart.
+
+I could **not** measure an orbit rate or check "11 orbits". Within the reel's 05:41-05:43 clip the view turns steadily at about 0.3 deg per
+video second, but frames 30 s apart at the end of the reel (t = 60 and 89) line up with no net rotation (149 inliers, 0.0 deg), the reel
+is cut (its clock jumps from 05:41 to 05:43) and time-compressed, so video seconds cannot be turned into a lap time. Frames with a
+readable HUD, each giving its own azimuth, would do it (see `REQUESTS.md`).
+
+**The five wide "Enemy Movement" slides are one still.** SIFT + RANSAC on the infrared picture, annotations masked
+(`frame_orientation.py --same-frame`): every pair among slides 234921, 235110, 235327, 235501 and 235846 gives 1,368 to 1,635 inliers,
+scale 1.000, rotation 0.0 deg. The four zoomed slides (235030, 235231, 235431, 235904) do not register to the wide still or to each
+other (2 to 8 inliers, which is noise; template matching scores 0.5 to 0.8 at every rotation, so it does not discriminate). They are
+separate video frames with unknown rotations. The wide still also matches no frame of the DoD reel (best 15 inliers, noise).
+
+**North on the wide still.** The labels R2, R1, B2 and B1 sit inside Blaber's outlines on the wide still, so they mark the features'
+centres; together with the trench's upper end and DShK that gives six features to fit his schematic onto (rotation, scale and a
+foreshortening factor f = 1/sin(camera tilt) for the oblique view; the tilt is unknown, so f is scanned):
+
+| Camera tilt | Fit error | North on screen (clockwise from up) | Camera looks toward |
+|---|---|---|---|
+| 46 deg (f 1.4) | 13.5 px | -26 deg | 19 deg |
+| 36 deg (f 1.7) | 12.7 px | -36 deg | 23 deg |
+| 30 deg (f 2.0) | 13.0 px | -44 deg | 26 deg |
+| 20 deg (f 2.9) | 15.9 px | -60 deg | 30 deg |
+
+So the schematic is turned about 90 deg anticlockwise onto the still: north points **up and to the left**, 26 to 60 deg left of up
+depending on the tilt (about 37 deg at the best fit), and the camera looks toward **north-north-east, 23 deg (+/-7 from label noise,
+and the schematic is a sketch, so call it +/-20)**. Leaving any one feature out moves the look direction by under 4 deg. Mirroring the
+schematic fits far worse (40 px against 13 px), as it must for a plan view seen from above. An independent cue: the slide text says
+Red Beard "begins movement Northwest" and the arrow on that slide points left, which puts north-west at the left and north about 45
+deg left of up.
+
+**North on the HUD frame.** If 232.79 is the camera's look direction (aircraft north-east of the aim point, looking south-west), north
+points 105 to 118 deg clockwise from up: to the right and a little down. Two checks favour that over reading it as the aircraft's
+bearing from the target (which would make the camera look at 52.8 deg and north point up-left at about -67 deg):
+
+* Blaber's schematic puts the bunker tree clumps about 60 m from the Razor 01 symbol (B1 at bearing 2, B2 at 346). In the HUD frame
+  the large dark clumps are about 60 m to the right of the Chinook (370 px at 0.163 m per px), and right is where north falls under the look-direction
+  reading (under the other reading it would be at the left).
+* The trail of hot figures leaving the ramp heads east to east-north-east (bearing 70 to 86 deg, by tilt) under that reading, towards
+  FP1 and FP2, which the schematic puts 23 and 48 m north-east of the Chinook (bearing 38 and 50). Under the other reading it would
+  head west, away from them.
+
+Both checks are good to 30-40 deg and depend on choosing the right clumps, so this is "consistent with", not proof.
+
+**What did not work.** (1) Registering the HUD frame's dark tree blobs onto the June 2021 canopy at every rotation and tilt: best
+normalised correlation 0.155 for the real frame against 0.148 for its mirror image, so it carries no information and gives no
+position (the placements above stand as they were). (2) Registering the HUD frame to the reel's Razor 01 frames (at most 11 inliers).
+
+**Fastest fix.** Every raw-feed frame with its HUD visible gives its own aim point and azimuth. A handful taken across the laps would
+give each slide's north outright and the orbit's period and radius.
