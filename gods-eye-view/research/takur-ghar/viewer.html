@@ -49,7 +49,7 @@
   <label class="layer"><input type="checkbox" id="L_chalk2" checked><span class="sw" style="background:#ff7040"></span>
     <span>Chalk 2 landing arc (600 m down-slope, E/SE) <span class="tag">distance: Army; direction: sketches</span></span></label>
   <label class="layer"><input type="checkbox" id="L_head" checked><span class="sw" style="background:#ffffff"></span>
-    <span>Headings from the summit complex <span class="tag">schematic, direction only</span></span></label>
+    <span>LZ fix (Predator HUD) and headings <span class="tag">fix ±100 m; headings schematic</span></span></label>
   <label class="layer"><input type="checkbox" id="L_ring" checked><span class="sw" style="background:#ffd23f"></span>
     <span>Razor 03 crash: 6 km ring <span class="tag">direction unknown</span></span></label>
   <div id="info">Click a layer's name to read how it was derived and its source.</div>
@@ -85,12 +85,11 @@ const INFO = {
   summit: '<b>Summit complex</b> (terrain high point 3,172 m at 33.3429 N 69.2135 E; published 3,186 m; OpenStreetMap\'s peak node, imported from the NGA names database, gives 3,191 m and is 90 m away, which is an independent check on the location). ' +
     'Per Copeland et al. (2021): enemy bunkers, a DShK heavy machine gun and mortar positions on the peak; a bowl-shaped, snow-covered LZ about 60 m from the bunkers; ' +
     'the Ranger fighting position beside the LZ; the northeast flank was a vertical cliff. Razor 03 was hit landing here, Razor 04 reinserted here, Razor 01 crash-landed here. ' +
-    'All of it sits within ~100 m, which this 31 m terrain can\'t separate, so it is one marker.',
+    'The bunkers, landing zone and fighting position were all close together; the Predator fix puts the landing zone 143 m west of this point (see Headings), which is within the fix\'s error but not on top of it.',
   chalk2: '<b>Chalk 2 landing arc.</b> The Army history (Folse 2022) says a second MH-47 put 13 Rangers under S. Sgt. Canon "600 meters down the slope", and they climbed to the top under mortar fire. Both Naylor\'s sketch and Copeland\'s Fig. 3 show them arriving from the east / south-east. The orange line is 600 m from the summit marker across bearings 70-150 deg; the ground along it is 65-250 m lower than the summit. ' +
     'It is an arc of possibilities, not a location. <b>Correction:</b> I first read Copeland\'s "2,000 feet below" as a 610 m drop in height and drew the 2,576 m contour; no ground east of the summit is that low, and the Army\'s wording (a distance down the slope) fits instead, so that layer was removed.',
-  head: '<b>Headings</b> read from two schematics: Naylor (2005), "Razor 01 assault on Al Qaida bunker atop Takur Ghar" (as reproduced on thebattlecast.com), whose compass arrow is labelled "W" and points up, so west is up on that sketch; and Copeland et al. Fig. 3. ' +
-    'They agree that the bunkers are north-west of the Rangers\' position and that Chalk 2 came from the east. Bearings are good to about 25 deg and lengths mean nothing (the sketches are not to scale). The arrows start at the summit marker because the whole complex is within about 100 m. ' +
-    'The orientation read from the W arrow is mine; if you can check it against the book, do.',
+  head: '<b>Headings from the LZ fix.</b> The white ring is the landing zone as fixed by the HUD on a Predator infrared frame of a Chinook at the LZ, 4 Mar 2002 (33 20\'34"N 69 12\'43"E, sensor aim point, rounded to 1 arc-second, 2002 geolocation error unknown: ring = 100 m). It lies 143 m west of the terrain high point, 64 m lower, and 184 m west-north-west of OpenStreetMap\'s peak. ' +
+    'The arrows are read from Naylor (2005) via thebattlecast.com, whose compass arrow is labelled "W" and points up (west up on that sketch), and Copeland et al. Fig. 3; they agree that the bunkers are north-west of the Rangers\' position and Chalk 2 came from the east. Bearings are good to about 25 deg; lengths mean nothing. My reading of the sketch\'s orientation is the weak link.',
   ring: '<b>Razor 03 crash: 6 km ring.</b> The geographic analysis says Razor 03 made a controlled crash "away from the peak"; the Army SOF history ("From a Great Height") puts tail 476 about 6 km from Takur Ghar. ' +
     'Neither gives a direction, so this is only a ring. Treating tail 476 as Razor 03 is my inference, and the sources are not fully consistent with each other.',
 };
@@ -210,12 +209,16 @@ Promise.all([
   rlab.position.set(mid[0], mid[1] + 700, mid[2]); ringG.add(rlab);
   world.add(ringG); layers.ring = ringG;
   // Headings: direction arrows from the summit complex (lengths are arbitrary)
+  const [lzx, lzy, lzz] = ov.lz.model;
   const headG = new THREE.Group();
+  { const m = new THREE.Mesh(new THREE.TorusGeometry(100, 12, 8, 48), new THREE.MeshBasicMaterial({ color: 0xffffff })); m.rotation.x = Math.PI / 2; m.position.set(lzx, lzy + 25, lzz); headG.add(m);
+    const c = new THREE.Mesh(new THREE.SphereGeometry(35, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffffff })); c.position.set(lzx, lzy + 40, lzz); headG.add(c);
+    const t = label('LZ fix (Predator HUD)', '#ffffff'); t.position.set(lzx, lzy + 520, lzz); headG.add(t); }
   for (const hd of ov.headings) {
     const b = THREE.MathUtils.degToRad(hd.bearing);
     const dir = new THREE.Vector3(Math.sin(b), 0, -Math.cos(b)); // x east, z south
-    const len = 1500, y0 = sy + 220;
-    const from = new THREE.Vector3(sx, y0, sz), to = from.clone().addScaledVector(dir, len);
+    const len = 1500, y0 = lzy + 220;
+    const from = new THREE.Vector3(lzx, y0, lzz), to = from.clone().addScaledVector(dir, len);
     const col = new THREE.Color(hd.color);
     const pts = hd.inbound ? [to, from] : [from, to];
     headG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: col })));

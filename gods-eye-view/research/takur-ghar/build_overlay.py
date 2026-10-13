@@ -112,8 +112,21 @@ HEADINGS = [
      "note": "Marked on the sketch west-south-west of the Rangers' position."},
 ]
 
+# LZ fix: the Predator infrared frame of a Chinook at the LZ (4 Mar 2002) has a HUD reading 33 20'34"N 69 12'43"E.
+# That is the sensor aim point (frame centre, where the helicopter is), DMS to 1 arc-second, with unknown 2002
+# Predator geolocation error: treat as +/-100 m. The clock on the frame reads 01:47:41 (time zone not stated).
+HUD = (33 + 20 / 60 + 34 / 3600, 69 + 12 / 60 + 43 / 3600)
+hx, hz = (HUD[1] - BOX[0]) * m_lon, (BOX[3] - HUD[0]) * m_lat
+hc, hr = int(round((hx - X[0, 0]) / dx)), int(round((hz - Z[0, 0]) / dz))
+lz = {"lat": HUD[0], "lon": HUD[1], "elev_m": float(z[hr, hc]), "model": [float(hx), float(z[hr, hc] * EXAG), float(hz)],
+      "uncertainty_m": 100,
+      "from_terrain_high_point_m": float(np.hypot(hx - X[r0, c0], hz - Z[r0, c0])),
+      "from_osm_peak_m": float(np.hypot((HUD[1] - OSM["lon"]) * m_lon, (HUD[0] - OSM["lat"]) * m_lat))}
+print(f"LZ fix {lz['elev_m']:.0f} m, {lz['from_terrain_high_point_m']:.0f} m from the terrain high point, {lz['from_osm_peak_m']:.0f} m from the OSM peak")
+
 out = {
     "summit": summit,
+    "lz": lz,
     "headings": HEADINGS,
     "chalk2": {"radius_m": ARC_R, "bearings": [ARC_B[0], ARC_B[-1]], "points": arc_pts, "elev_along_arc": arc_elev,
                "basis": "Army history (Folse 2022): 600 m down the slope; direction from Naylor 2005 sketch and Copeland et al. Fig. 3"},

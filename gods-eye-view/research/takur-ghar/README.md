@@ -36,7 +36,7 @@ Three layers, each with its derivation shown in the viewer. None is a surveyed p
 | Layer | What it is | Basis |
 |---|---|---|
 | Summit complex | Highest terrain cell near the usual coordinate: 3,172 m at 33.3429 N 69.2135 E | Copeland et al. 2021: bunkers, DShK, LZ (~60 m from the bunkers) and Ranger fighting position all on the summit; too close together for a 31 m DEM, so one marker. **Location check:** OpenStreetMap's peak node for Takur Ghar (from the NGA names database, 33.3421 N 69.2138 E, 3,191 m) is 90 m from this cell. The rounded 33.34 N 69.21 E that I used first is 456 m away and would have been wrong. |
-| Headings | Six direction arrows from the summit marker (bunkers NW ~315 deg, cliff NE ~30, rocky hill ENE ~66, Chalk 2 inbound from ~110 deg, Razor 01 wreck SSW ~206, MAKO 30 second site WSW ~256) | Read from Naylor 2005, "Razor 01 assault on Al Qaida bunker atop Takur Ghar" (as reproduced on thebattlecast.com) and Copeland et al. Fig. 3. Direction only (about +/-25 deg), lengths mean nothing. **My reading of the Naylor sketch: its compass arrow is labelled "W" and points up, so west is up.** Copeland's figure independently agrees on the bunkers (NW) and Chalk 2 (from the east). Please check against the book. |
+| LZ fix + headings | A white ring (100 m) at the Predator HUD point, with six direction arrows from it (bunkers NW ~315 deg, cliff NE ~30, rocky hill ENE ~66, Chalk 2 inbound from ~110 deg, Razor 01 wreck SSW ~206, MAKO 30 second site WSW ~256) | Read from Naylor 2005 "Razor 01 assault" sketch (as reproduced on thebattlecast.com) and Copeland et al. Fig. 3, drawn from the LZ fix below. Direction only (about +/-25 deg), lengths mean nothing. **My reading of the Naylor sketch: its compass arrow is labelled "W" and points up, so west is up.** Copeland's figure independently agrees on the bunkers (NW) and Chalk 2 (from the east). Please check against the book. |
 | Chalk 2 landing arc | A line 600 m from the summit marker across bearings 70-150 deg (ground there is 65-250 m lower than the summit) | **Distance:** the Army history (Folse 2022, p. 62): a second MH-47 landed 13 Rangers under S. Sgt. Canon "600 meters down the slope". **Direction:** both schematics put Chalk 2's approach to the east/south-east. An arc of possibilities, not a location. |
 | Razor 03 crash ring | 6 km circle around the summit | Army SOF history puts tail 476 about 6 km from Takur Ghar; Razor 03 "crashed away from the peak". No direction given; treating 476 as Razor 03 is an inference |
 
@@ -114,3 +114,28 @@ search zone. The imagery is not stored in this repository (Esri's terms apply).
 The boulder bunker is not identifiable in it by me. The sourced clues for finding it: the bunkers and DShK sit at the
 top, north-west of the Rangers' bowl-shaped landing zone (about 60 m away), with a vertical cliff on the north-east edge
 and a lone "bonsai" tree beside the boulder (Naylor sketch). Look within about 100 m of the two summit points.
+
+## Predator HUD fix (from a frame supplied by the user)
+
+An infrared frame from the Predator feed shows an MH-47 with rotors turning on a snowy slope with a lone pine at the left
+and footpaths in the snow, with a HUD reading **33°20'34"N 69°12'43"E**, **232.79°**, **1.93 nm**, **252 m** and a clock
+of **01:47:41** (no time zone). I read the coordinate as the sensor's aim point (frame centre, where the helicopter is);
+the other numbers I do not know the meaning of (232.79 could be the camera's look direction, 1.93 nm the slant range).
+
+* 33.34278 N 69.21194 E, rounded to 1 arc-second (about 31 m north-south, 26 m east-west), and 2002 Predator
+  geolocation error is unknown, so I treat it as **+/-100 m**.
+* It is **143 m west** of the terrain high point (bearing 264 deg), **184 m west-north-west** of OpenStreetMap's peak
+  (bearing 292 deg), and the terrain there is **3,111 m, about 60 m below** the high point. The sources put the LZ "on the
+  summit", so either the fix is off by more than 100 m, or the fight was on a bench below and west of the high point.
+* If the clock is Zulu, 01:47:41 is 06:17 local, which is close to the Army's 06:05 landing of the Ranger helicopters
+  (Razor 01; Chalk 2 landed elsewhere). That is a guess; the frame shows an intact aircraft unloading, and small dark
+  (hot) figures under the tail.
+* Using it as the anchor, the boulder bunker (north-west of the Rangers' position, 50-100 m on the Naylor sketch) falls
+  near 33.3431-33.3434 N 69.2112-69.2116 E. The wedge in `orient_imagery.py`'s output covers 50-100 m at bearings
+  290-340 from the fix. In the Esri imagery that wedge holds a cluster of conifers, consistent with bunkers "under the
+  cover of foliage" (Copeland et al.), but I cannot see a bunker or boulder in 0.5 m summer imagery.
+
+Other images supplied (no sources given, so provenance is unverified): burned helicopter wreckage beside a lone conifer on
+a bare crest; wreckage in a hollow beside a stone-lined pit with snow peaks behind; and a DShK on a tripod in a rock and
+sandbag emplacement above a snowy slope of conifers. They are ground-level references for what to look for, not
+geolocated.
