@@ -36,3 +36,17 @@ Ask the U.S. Army Center of Military History for the original and its release st
 ## Record for every image you use
 
 Sensor, capture date/time (UTC), off-nadir angle, resolution, cloud/snow cover, source and license.
+
+## Leads found (imagery of possible significance)
+
+| Lead | What it is | Access |
+|---|---|---|
+| Army SOF history, "From a Great Height" | ~15 photos of MH-47E 476 and its sling-load recovery by Mi-26, 7-8 Apr 2002; no photo credits given | https://arsof-history.org/articles/21may_from_a_great_height_page_1.html |
+| DVIDS image 9159269 | DoD photo of MH-47E "Razor 01" atop Takur Ghar; page date 04.24.2007 (may be an upload date); public domain; 600x450 on page, login for download | https://www.dvidshub.net/image/9159269/chinook-helicopter-atop-takur-ghar-after-fierce-battle-during-operation-anaconda |
+| Predator video (tail 3034) | Infrared video of the fight; the only motion record from overhead | https://www.af.mil/News/Article-Display/Article/1619140/phantom-of-takur-ghar-the-predator-above-roberts-ridge/ |
+| Copeland et al., "The Battle of Takur Ghar: A Geographic Analysis" | Terrain analysis; uses 2018 Maxar imagery and aerial lidar obtained through NGA (not public) | https://msaag.aag.org/wp-content/uploads/2022/06/8-Copeland-et-al-MSG54-2021.pdf |
+| Army War College paper (DTIC ADA414541) | Predator feed and command situational awareness | https://apps.dtic.mil/sti/pdfs/ADA414541.pdf |
+
+Open question: the sources disagree on where the downed aircraft sat (SOF history puts 476
+about 6 km from the peak; DVIDS captions a Chinook "atop" Takur Ghar). Resolve before plotting.
+No 2002 commercial satellite image of Takur Ghar was found in public sources.
