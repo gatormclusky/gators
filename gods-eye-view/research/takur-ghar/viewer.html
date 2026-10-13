@@ -31,6 +31,12 @@
   <div><button id="top">Top view</button><button id="obl">Oblique view</button></div>
   <label class="note">Vertical exaggeration <input id="exag" type="range" min="0.5" max="3" step="0.1" value="1"> <span id="exagv">1.5x</span></label>
 
+  <h2>Sun, 4 March 2002</h2>
+  <label class="note"><input type="checkbox" id="sunon"> Show sun and cast shadows (terrain only)</label>
+  <label class="note">Local time (UTC+4:30) <input id="tod" type="range" min="0" max="79" step="1" value="29" disabled> <b id="todv">10:20</b></label>
+  <label class="note"><input type="checkbox" id="grey" disabled> Grey terrain (hides the Landsat's own shading)</label>
+  <div class="note" id="sunv">Sun az -, el -. Sunrise 06:11, sunset 17:58. The satellite texture already contains its own shading from its pass (about 10:20 local), so use the grey option to judge shadows.</div>
+
   <h2>Overlay</h2>
   <label class="layer"><input type="checkbox" id="L_summit" checked><span class="sw" style="background:#ff2020"></span>
     <span>Summit complex <span class="tag">sourced, ~100 m</span></span></label>
@@ -91,6 +97,15 @@ const sun = new THREE.DirectionalLight(0xffffff, 1.4);
 sun.position.set(-8000, 9000, -6000);
 scene.add(sun);
 
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+sun.castShadow = false;
+sun.shadow.mapSize.set(4096, 4096);
+sun.shadow.camera.left = -9000; sun.shadow.camera.right = 9000; sun.shadow.camera.top = 9000; sun.shadow.camera.bottom = -9000;
+sun.shadow.camera.near = 100; sun.shadow.camera.far = 40000;
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 8;
+scene.add(sun.target); sun.target.position.set(6000, 2500, 5500);
+
 const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 50, 200000);
 camera.position.set(6000, 8500, 21000);
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -126,7 +141,7 @@ function tex(name, file, flip = false) {
 }
 function apply(name) {
   current = name;
-  if (mesh && textures[name]?.image) { mesh.material.map = textures[name]; mesh.material.needsUpdate = true; }
+  if (mesh && textures[name]?.image && !document.getElementById('grey')?.checked) { mesh.material.map = textures[name]; mesh.material.needsUpdate = true; }
   for (const id of ['sep', 'mar']) document.getElementById(id).setAttribute('aria-pressed', String(id === name));
 }
 tex('sep', 'takur_ghar_2002_texture.png');
@@ -139,6 +154,7 @@ Promise.all([
   gltf.scene.traverse((o) => { if (o.isMesh) mesh = o; });
   if (!mesh.geometry.attributes.normal) mesh.geometry.computeVertexNormals();
   mesh.material = new THREE.MeshStandardMaterial({ map: mesh.material.map, roughness: 1, metalness: 0 });
+  mesh.castShadow = true; mesh.receiveShadow = true;
   world.add(gltf.scene);
   apply(current);
 
@@ -182,6 +198,43 @@ Promise.all([
   world.add(ringG); layers.ring = ringG;
   window.__ready = true;
 });
+
+let sunTbl = [];
+fetch('sun.json').then((r) => r.json()).then((t) => { sunTbl = t; setSun(); });
+const defaultSunPos = sun.position.clone();
+function setSun() {
+  const on = document.getElementById('sunon').checked;
+  const i = Number(document.getElementById('tod').value);
+  const row = sunTbl[Math.min(i, sunTbl.length - 1)];
+  if (!row) return;
+  document.getElementById('todv').textContent = row.t;
+  document.getElementById('sunv').textContent = on
+    ? `Sun azimuth ${row.az.toFixed(0)} deg, elevation ${row.el.toFixed(0)} deg${row.el < 0 ? ' (sun below the horizon)' : ''}. Sunrise 06:11, sunset 17:58. Terrain shadows only: no snow, rocks, cloud or night.`
+    : document.getElementById('sunv').textContent;
+  if (!on) return;
+  const az = THREE.MathUtils.degToRad(row.az), el = THREE.MathUtils.degToRad(Math.max(row.el, 0.5));
+  // model axes: x east, z south, y up. Compass azimuth is measured clockwise from north.
+  const d = 30000;
+  sun.position.set(sun.target.position.x + d * Math.cos(el) * Math.sin(az), sun.target.position.y + d * Math.sin(el), sun.target.position.z - d * Math.cos(el) * Math.cos(az));
+  sun.intensity = row.el <= 0 ? 0 : 2.2;
+}
+document.getElementById('sunon').addEventListener('change', (e) => {
+  const on = e.target.checked;
+  document.getElementById('tod').disabled = !on;
+  document.getElementById('grey').disabled = !on;
+  sun.castShadow = on;
+  if (!on) { sun.position.copy(defaultSunPos); sun.intensity = 1.4; document.getElementById('grey').checked = false; setGrey(false); }
+  setSun();
+});
+document.getElementById('tod').addEventListener('input', setSun);
+function setGrey(g) {
+  if (!mesh) return;
+  mesh.material.map = g ? null : textures[current];
+  mesh.material.color.set(g ? 0xb8b2a8 : 0xffffff);
+  mesh.material.needsUpdate = true;
+}
+document.getElementById('grey').addEventListener('change', (e) => setGrey(e.target.checked));
+const _apply = apply;
 
 for (const key of ['summit', 'chalk2', 'ring']) {
   const box = document.getElementById('L_' + (key === 'ring' ? 'ring' : key));
