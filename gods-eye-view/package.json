@@ -1,0 +1,12 @@
+{
+  "name": "gods-eye-view",
+  "version": "0.1.0",
+  "description": "MCP (stdio) server exposing the 2D-to-3D map converter API to Claude",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "mcp": "node server/mcp/stdio.js",
+    "test": "node --test test/*.test.js"
+  }
+}
