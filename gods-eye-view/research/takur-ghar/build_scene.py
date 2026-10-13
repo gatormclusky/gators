@@ -38,6 +38,8 @@ with rasterio.open(a.dem) as src:
 h, w = z.shape
 
 # Resample each Landsat band onto the DEM grid (surface reflectance = DN*0.0000275 - 0.2).
+VALID_MIN = 7273  # Landsat C2 L2 surface-reflectance valid DN range starts here; below it is edge/fill noise
+
 def resample(path):
     with rasterio.open(path) as s:
         dst = np.zeros((h, w), "float32")
@@ -48,11 +50,11 @@ def resample(path):
 bands = [resample(p) for p in (a.red, a.green, a.blue)]
 if a.fill:
     for b, p in zip(bands, a.fill):
-        gap = b == 0
+        gap = b < VALID_MIN
         b[gap] = resample(p)[gap]
-print(f"texture coverage: {100 * (bands[0] > 0).mean():.1f}%")
-rgb = np.dstack([np.clip(b * 0.0000275 - 0.2, 0, 1) * (b > 0) for b in bands])
-lo, hi = np.percentile(rgb[rgb > 0], (2, 98))
+print(f"texture coverage: {100 * (bands[0] >= VALID_MIN).mean():.1f}%")
+rgb = np.dstack([np.clip(b * 0.0000275 - 0.2, 0, 1) * (b >= VALID_MIN) for b in bands])
+lo, hi = np.percentile(rgb[rgb > 0], (2, 98))  # stretch over valid pixels only
 tex = np.clip((rgb - lo) / (hi - lo), 0, 1) ** (1 / 1.2)
 Image.fromarray((tex * 255).astype("uint8")).save(a.out.replace(".glb", "_texture.png"))
 
@@ -74,5 +76,11 @@ faces = np.vstack([np.column_stack([tl, bl, tr]), np.column_stack([tr, bl, br])]
 img = Image.open(a.out.replace(".glb", "_texture.png"))
 mat = trimesh.visual.material.PBRMaterial(baseColorTexture=img, metallicFactor=0.0, roughnessFactor=1.0)
 mesh = trimesh.Trimesh(verts, faces, visual=trimesh.visual.TextureVisuals(uv=uv, material=mat), process=False)
+# Normals straight from the height grid (fast, and the GLB then carries NORMAL so viewers can light it).
+dy_dx = np.gradient(y, abs(tf.a) * m_lon, axis=1)
+dy_dz = np.gradient(y, abs(tf.e) * m_lat, axis=0)  # rows run south, same as +z
+nrm = np.dstack([-dy_dx, np.ones_like(y), -dy_dz])
+nrm /= np.linalg.norm(nrm, axis=2, keepdims=True)
+mesh.vertex_normals = nrm.reshape(-1, 3)
 mesh.export(a.out)
 print(f"{a.out}: {len(verts)} vertices, {len(faces)} faces, exaggeration x{a.exag}")

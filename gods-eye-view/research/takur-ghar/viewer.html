@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Takur Ghar 3D</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #14110d; color: #eee; font: 14px system-ui, sans-serif; }
+  #ui { position: fixed; top: 12px; left: 12px; padding: 10px 12px; background: rgba(20,17,13,.82); border-radius: 8px; max-width: 320px; }
+  button { margin: 2px 4px 2px 0; padding: 6px 10px; border: 1px solid #777; border-radius: 6px; background: #2a241c; color: #eee; cursor: pointer; }
+  button[aria-pressed="true"] { background: #c9822b; border-color: #c9822b; color: #111; }
+  label { display: block; margin-top: 6px; }
+  #note { margin-top: 6px; font-size: 12px; opacity: .8; line-height: 1.35; }
+</style>
+</head>
+<body>
+<div id="ui">
+  <strong>Takur Ghar terrain</strong>
+  <div>
+    <button id="sep" aria-pressed="true">Sep 2002 (bare ground)</button>
+    <button id="mar" aria-pressed="false">Mar 2002 (after battle, snow)</button>
+  </div>
+  <label>Vertical exaggeration <input id="exag" type="range" min="0.5" max="3" step="0.1" value="1"> <span id="exagv">1.5x</span></label>
+  <div id="note">Terrain: NASADEM (SRTM-derived, Feb 2000). Texture: Landsat, 30 m. Red marker: approx. summit (33.34 N, 69.21 E).
+  Drag to orbit, scroll to zoom, right-drag to pan.</div>
+</div>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const BASE_EXAG = 1.5;
+const SUMMIT = { x: (69.21 - 69.15) * 111320 * Math.cos(33.35 * Math.PI / 180), z: (33.40 - 33.34) * 110574 };
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x14110d);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x554433, 1.0));
+const sun = new THREE.DirectionalLight(0xffffff, 1.4);
+sun.position.set(-8000, 9000, -6000);
+scene.add(sun);
+
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 50, 200000);
+camera.position.set(6000, 9000, 22000);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(6000, 3000, 5500);
+controls.update();
+
+const world = new THREE.Group();
+scene.add(world);
+let mesh;
+
+const textures = {};
+const loader = new THREE.TextureLoader();
+function tex(name, file) {
+  textures[name] = loader.load(file, (t) => { t.flipY = false; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; if (name === current) apply(name); });
+}
+let current = 'sep';
+function apply(name) {
+  current = name;
+  if (mesh && textures[name]?.image) { mesh.material.map = textures[name]; mesh.material.needsUpdate = true; }
+  for (const id of ['sep', 'mar']) document.getElementById(id).setAttribute('aria-pressed', String(id === name));
+}
+tex('sep', 'takur_ghar_2002_texture.png');
+tex('mar', 'takur_ghar_2002_mar_texture.png');
+
+new GLTFLoader().load('takur_ghar_2002.glb', (gltf) => {
+  gltf.scene.traverse((o) => { if (o.isMesh) mesh = o; });
+  if (!mesh.geometry.attributes.normal) mesh.geometry.computeVertexNormals();
+  mesh.material = new THREE.MeshStandardMaterial({ map: mesh.material.map, roughness: 1, metalness: 0 });
+  world.add(gltf.scene);
+  apply(current);
+  // marker at the vertex nearest the summit coordinate
+  const pos = mesh.geometry.attributes.position;
+  let best = Infinity, bi = 0;
+  for (let i = 0; i < pos.count; i++) {
+    const d = (pos.getX(i) - SUMMIT.x) ** 2 + (pos.getZ(i) - SUMMIT.z) ** 2;
+    if (d < best) { best = d; bi = i; }
+  }
+  const marker = new THREE.Mesh(new THREE.ConeGeometry(120, 500, 12), new THREE.MeshBasicMaterial({ color: 0xff2020 }));
+  marker.rotation.x = Math.PI;
+  marker.position.set(pos.getX(bi), pos.getY(bi) + 300, pos.getZ(bi));
+  marker.name = 'marker';
+  world.add(marker);
+  window.__ready = true;
+});
+
+document.getElementById('sep').onclick = () => apply('sep');
+document.getElementById('mar').onclick = () => apply('mar');
+const exag = document.getElementById('exag');
+exag.oninput = () => {
+  world.scale.y = Number(exag.value);
+  document.getElementById('exagv').textContent = (BASE_EXAG * Number(exag.value)).toFixed(1) + 'x';
+};
+addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+</script>
+</body>
+</html>
