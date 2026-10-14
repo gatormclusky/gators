@@ -97,6 +97,17 @@ def upload_map():
         return handle_error(APIError('File upload failed', 500))
 
 
+@app.route('/api/maps', methods=['GET'])
+def list_maps():
+    """List uploaded maps, newest first"""
+    try:
+        maps = file_handler.list_files()
+        return jsonify({'status': 'success', 'count': len(maps), 'maps': maps}), 200
+    except Exception as e:
+        logger.error(f"List error: {str(e)}")
+        return handle_error(APIError('Failed to list maps', 500))
+
+
 @app.route('/api/maps/<map_id>/preview', methods=['GET'])
 def get_map_preview(map_id):
     """Get preview of uploaded map"""

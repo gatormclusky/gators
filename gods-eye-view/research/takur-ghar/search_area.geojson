@@ -1,0 +1,51 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Search box (approx.)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              69.15,
+              33.3
+            ],
+            [
+              69.28,
+              33.3
+            ],
+            [
+              69.28,
+              33.4
+            ],
+            [
+              69.15,
+              33.4
+            ],
+            [
+              69.15,
+              33.3
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Takur Ghar (approx. 33.34N 69.21E)"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          69.21,
+          33.34
+        ]
+      }
+    }
+  ]
+}
